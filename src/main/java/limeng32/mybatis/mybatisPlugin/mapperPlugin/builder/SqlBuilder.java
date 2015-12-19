@@ -66,6 +66,7 @@ public class SqlBuilder {
 		}
 		tableMapper = new TableMapper();
 		List<String> uniqueKeyList = new ArrayList<String>();
+		List<String> opLockVersionList = new ArrayList<String>();
 		Annotation[] classAnnotations = dtoClass.getDeclaredAnnotations();
 		for (Annotation an : classAnnotations) {
 			if (an instanceof TableMapperAnnotation) {
@@ -90,6 +91,13 @@ public class SqlBuilder {
 					fieldMapper.setJdbcType(fieldMapperAnnotation.jdbcType());
 					fieldMapper.setUniqueKey(fieldMapperAnnotation
 							.isUniqueKey());
+					switch (fieldMapperAnnotation.opLockType()) {
+					case Version:
+						fieldMapper.setOpLockVersion(true);
+						break;
+					default:
+						break;
+					}
 					if (fieldMapperAnnotation.isUniqueKey()) {
 						uniqueKeyList.add(fieldMapper.getDbFieldName());
 					}
@@ -112,6 +120,9 @@ public class SqlBuilder {
 								.getFieldName();
 						fieldMapper.setForeignFieldName(foreignFieldName);
 					}
+					if (fieldMapper.isOpLockVersion()) {
+						opLockVersionList.add(fieldMapper.getDbFieldName());
+					}
 					fieldMapperCache.put(field.getName(), fieldMapper);
 				} else if (an instanceof PersistentFlagAnnotation) {
 					tableMapper.getPersistentFlags().add(field.getName());
@@ -133,6 +144,8 @@ public class SqlBuilder {
 		tableMapper.setFieldMapperCache(fieldMapperCache);
 		tableMapper.setUniqueKeyNames(uniqueKeyList
 				.toArray(new String[uniqueKeyList.size()]));
+		tableMapper.setOpLockVersions(opLockVersionList
+				.toArray(new String[opLockVersionList.size()]));
 		tableMapperCache.put(dtoClass, tableMapper);
 		return tableMapper;
 	}

@@ -23,6 +23,8 @@ public class TableMapper {
 
 	private String ableFlag;
 
+	private String[] opLockVersions;
+
 	public Annotation getTableMapperAnnotation() {
 		return tableMapperAnnotation;
 	}
@@ -45,6 +47,14 @@ public class TableMapper {
 
 	public void setUniqueKeyNames(String[] uniqueKeyNames) {
 		this.uniqueKeyNames = uniqueKeyNames;
+	}
+
+	public String[] getOpLockVersions() {
+		return opLockVersions;
+	}
+
+	public void setOpLockVersions(String[] opLockVersions) {
+		this.opLockVersions = opLockVersions;
 	}
 
 	public Collection<String> getPersistentFlags() {

@@ -38,6 +38,12 @@ public @interface FieldMapperAnnotation {
 
 	/**
 	 * 
+	 * 此变量是否是乐观锁，默认不是。
+	 */
+	OpLockType opLockType() default OpLockType.Null;
+
+	/**
+	 * 
 	 * 字段用JDBC接口存入数据库需要设置的数据类型,Integer,Long,Short,Float,Double,String,Date
 	 * ,Timestamp,Time
 	 */
