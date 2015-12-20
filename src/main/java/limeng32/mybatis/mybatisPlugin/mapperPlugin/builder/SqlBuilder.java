@@ -400,8 +400,13 @@ public class SqlBuilder {
 		for (Mapperable fieldMapper : tableMapper.getFieldMapperCache()
 				.values()) {
 			Object value = dtoFieldMap.get(fieldMapper.getFieldName());
-			if (value == null || fieldMapper instanceof AbleFieldMapper) {
+			if (fieldMapper instanceof AbleFieldMapper
+					|| (!((FieldMapper) fieldMapper).isOpLockVersion() && value == null)) {
 				continue;
+			} else if (((FieldMapper) fieldMapper).isOpLockVersion()) {
+				value = 0;
+				ReflectHelper.setValueByFieldName(object,
+						fieldMapper.getFieldName(), value);
 			}
 			allFieldNull = false;
 			tableSql.append(fieldMapper.getDbFieldName()).append(",");
@@ -503,6 +508,9 @@ public class SqlBuilder {
 					.append(",").append("jdbcType=")
 					.append(fieldMapper.getJdbcType().toString())
 					.append("} and ");
+		}
+		for (String s : tableMapper.getOpLockVersions()) {
+			// TODO 处理乐观锁字段
 		}
 		whereSql.delete(whereSql.lastIndexOf("and"),
 				whereSql.lastIndexOf("and") + 3);
