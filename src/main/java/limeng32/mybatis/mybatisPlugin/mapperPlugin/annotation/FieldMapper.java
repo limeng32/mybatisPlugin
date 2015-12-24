@@ -47,7 +47,7 @@ public class FieldMapper implements Mapperable {
 	/**
 	 * 此变量是否为version型乐观锁。默认为否。
 	 */
-	private boolean isOpLockVersion;
+	private boolean isOpVersionLock;
 
 	@Override
 	public String getDbFieldName() {
@@ -111,12 +111,12 @@ public class FieldMapper implements Mapperable {
 		this.foreignFieldName = foreignFieldName;
 	}
 
-	public boolean isOpLockVersion() {
-		return isOpLockVersion;
+	public boolean isOpVersionLock() {
+		return isOpVersionLock;
 	}
 
-	public void setOpLockVersion(boolean isOpLockVersion) {
-		this.isOpLockVersion = isOpLockVersion;
+	public void setOpVersionLock(boolean isOpVersionLock) {
+		this.isOpVersionLock = isOpVersionLock;
 	}
 
 }

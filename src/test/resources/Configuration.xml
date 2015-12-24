@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<settings>
+		<setting name="logImpl" value="LOG4J" />
+		<setting name="cacheEnabled" value="false" />
+		<setting name="lazyLoadingEnabled" value="false" />
+		<setting name="aggressiveLazyLoading" value="false" />
+		<setting name="localCacheScope" value="SESSION" />
+		<setting name="autoMappingBehavior" value="PARTIAL" />
+		<setting name="proxyFactory" value="CGLIB" />
+		<setting name="lazyLoadTriggerMethods" value="" />
+	</settings>
+	<typeAliases>
+		<package name="limeng32.mybatis.mybatisPlugin.mapperPlugin.handler" />
+		<package name="org.apache.ibatis.type" />
+	</typeAliases>
+	<typeHandlers>
+		<typeHandler handler="ConditionLikeHandler" />
+		<typeHandler handler="ConditionHeadLikeHandler" />
+		<typeHandler handler="ConditionTailLikeHandler" />
+		<typeHandler handler="AbleConditionHandler" />
+		<typeHandler handler="BooleanHandler" />
+		<typeHandler handler="AdvancedStringTypeHandler" />
+	</typeHandlers>
+	<plugins>
+		<plugin interceptor="limeng32.mybatis.mybatisPlugin.cachePlugin.CachePlugin">
+		</plugin>
+
+		<plugin interceptor="limeng32.mybatis.mybatisPlugin.cachePlugin.SqlPlugin">
+			<property name="dialect" value="mysql" />
+		</plugin>
+
+		<plugin interceptor="limeng32.mybatis.mybatisPlugin.mapperPlugin.AutoMapperInterceptor">
+		</plugin>
+
+		<plugin interceptor="limeng32.mybatis.mybatisPlugin.cachePlugin.EnhancedCachingExecutor">
+			<property name="cacheEnabled" value="true" />
+			<property name="annotationPackage" value="limeng32.mybatis.mybatisPlugin" />
+		</plugin>
+	</plugins>
+</configuration>

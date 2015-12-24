@@ -1,8 +1,6 @@
 package limeng32.mybatis.mybatisPlugin.mapperPlugin.annotation;
 
 import java.lang.annotation.Annotation;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -15,15 +13,11 @@ public class TableMapper {
 
 	private Annotation tableMapperAnnotation;
 
-	private Map<String, Mapperable> fieldMapperCache;
+	private Map<String, FieldMapper> fieldMapperCache;
 
-	private String[] uniqueKeyNames;
+	private FieldMapper[] uniqueKeyNames;
 
-	private Collection<String> persistentFlags;
-
-	private String ableFlag;
-
-	private String[] opLockVersions;
+	private FieldMapper[] opVersionLocks;
 
 	public Annotation getTableMapperAnnotation() {
 		return tableMapperAnnotation;
@@ -33,46 +27,28 @@ public class TableMapper {
 		this.tableMapperAnnotation = tableMapperAnnotation;
 	}
 
-	public Map<String, Mapperable> getFieldMapperCache() {
+	public Map<String, FieldMapper> getFieldMapperCache() {
 		return fieldMapperCache;
 	}
 
-	public void setFieldMapperCache(Map<String, Mapperable> fieldMapperCache) {
+	public void setFieldMapperCache(Map<String, FieldMapper> fieldMapperCache) {
 		this.fieldMapperCache = fieldMapperCache;
 	}
 
-	public String[] getUniqueKeyNames() {
+	public FieldMapper[] getUniqueKeyNames() {
 		return uniqueKeyNames;
 	}
 
-	public void setUniqueKeyNames(String[] uniqueKeyNames) {
+	public void setUniqueKeyNames(FieldMapper[] uniqueKeyNames) {
 		this.uniqueKeyNames = uniqueKeyNames;
 	}
 
-	public String[] getOpLockVersions() {
-		return opLockVersions;
+	public FieldMapper[] getOpVersionLocks() {
+		return opVersionLocks;
 	}
 
-	public void setOpLockVersions(String[] opLockVersions) {
-		this.opLockVersions = opLockVersions;
-	}
-
-	public Collection<String> getPersistentFlags() {
-		if (persistentFlags == null)
-			persistentFlags = new HashSet<>();
-		return persistentFlags;
-	}
-
-	public void setPersistentFlags(Collection<String> persistentFlags) {
-		this.persistentFlags = persistentFlags;
-	}
-
-	public String getAbleFlag() {
-		return ableFlag;
-	}
-
-	public void setAbleFlag(String ableFlag) {
-		this.ableFlag = ableFlag;
+	public void setOpVersionLocks(FieldMapper[] opVersionLocks) {
+		this.opVersionLocks = opVersionLocks;
 	}
 
 }
