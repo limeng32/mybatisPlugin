@@ -4,6 +4,10 @@ import java.util.Collection;
 
 import limeng32.mybatis.mybatisPlugin.AccountService;
 import limeng32.mybatis.mybatisPlugin.Account_;
+import limeng32.mybatis.mybatisPlugin.cachePlugin.Conditionable;
+import limeng32.mybatis.mybatisPlugin.cachePlugin.Order;
+import limeng32.mybatis.mybatisPlugin.cachePlugin.PageParam;
+import limeng32.mybatis.mybatisPlugin.cachePlugin.SortParam;
 import limeng32.mybatis.mybatisPlugin.condition.Account_Condition;
 
 import org.apache.commons.dbcp.BasicDataSource;
@@ -121,5 +125,55 @@ public class AccountTest {
 		Account_[] accounts = c.toArray(new Account_[c.size()]);
 		Assert.assertEquals(1, accounts.length);
 		Assert.assertEquals("ann@live.cn", accounts[0].getEmail());
+	}
+
+	/** 测试sorter功能 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testSorter.xml")
+	@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testSorter.xml")
+	public void testSorter() {
+		Account_Condition ac = new Account_Condition();
+		ac.setSorter(new SortParam(new Order(Account_Condition.field_name,
+				Conditionable.Sequence.desc)));
+		Collection<Account_> c = accountService.selectAll(ac);
+		Account_[] accounts = c.toArray(new Account_[c.size()]);
+		Assert.assertEquals("ann", accounts[3].getName());
+		Assert.assertEquals("5a690d842935c51f26f473e025c1b97a",
+				accounts[0].getPassword());
+		ac.setSorter(new SortParam(new Order(Account_Condition.field_name,
+				Conditionable.Sequence.desc), new Order(
+				Account_Condition.field_password, Conditionable.Sequence.desc)));
+		c = accountService.selectAll(ac);
+		accounts = c.toArray(new Account_[c.size()]);
+		Assert.assertEquals("6a690d842935c51f26f473e025c1b97a",
+				accounts[0].getPassword());
+		ac.setSorter(new SortParam(new Order(Account_Condition.field_name,
+				Conditionable.Sequence.desc), new Order(
+				Account_Condition.field_name, Conditionable.Sequence.asc)));
+		c = accountService.selectAll(ac);
+		accounts = c.toArray(new Account_[c.size()]);
+		Assert.assertEquals("ann", accounts[3].getName());
+	}
+
+	/** 测试limiter功能 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testLimiter.xml")
+	@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testLimiter.xml")
+	public void testLimiter() {
+		Account_Condition ac = new Account_Condition();
+		ac.setLimiter(new PageParam(1, 2));
+		Collection<Account_> c = accountService.selectAll(ac);
+		Account_[] accounts = c.toArray(new Account_[c.size()]);
+		Assert.assertEquals(2, accounts.length);
+		Assert.assertEquals(1, accounts[0].getId().intValue());
+		Assert.assertEquals(2, accounts[1].getId().intValue());
+		Assert.assertEquals(2, ac.getLimiter().getMaxPageNum());
+		ac.setSorter(new SortParam(new Order(Account_Condition.field_id,
+				Conditionable.Sequence.desc)));
+		c = accountService.selectAll(ac);
+		accounts = c.toArray(new Account_[c.size()]);
+		Assert.assertEquals(2, accounts.length);
+		Assert.assertEquals(4, accounts[0].getId().intValue());
+		Assert.assertEquals(3, accounts[1].getId().intValue());
 	}
 }
