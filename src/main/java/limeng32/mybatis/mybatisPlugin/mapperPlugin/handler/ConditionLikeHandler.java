@@ -23,12 +23,8 @@ public class ConditionLikeHandler extends BaseTypeHandler<String> implements
 		TypeHandler<String> {
 
 	@Override
-	public void setParameter(PreparedStatement ps, int i, String parameter,
-			JdbcType jdbcType) throws SQLException {
-		if (parameter == null) {
-			ps.setString(i, null);
-			return;
-		}
+	public void setNonNullParameter(PreparedStatement ps, int i,
+			String parameter, JdbcType jdbcType) throws SQLException {
 		if (parameter.indexOf("%") > -1) {
 			parameter = parameter.replaceAll("%", "\\\\%");
 		}
@@ -36,12 +32,6 @@ public class ConditionLikeHandler extends BaseTypeHandler<String> implements
 			parameter = parameter.replaceAll("_", "\\\\_");
 		}
 		ps.setString(i, "%" + parameter + "%");
-	}
-
-	@Override
-	public void setNonNullParameter(PreparedStatement ps, int i,
-			String parameter, JdbcType jdbcType) throws SQLException {
-		ps.setString(i, parameter);
 	}
 
 	@Override

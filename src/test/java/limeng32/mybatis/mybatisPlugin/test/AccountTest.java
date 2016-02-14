@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import limeng32.mybatis.mybatisPlugin.AccountService;
 import limeng32.mybatis.mybatisPlugin.Account_;
+import limeng32.mybatis.mybatisPlugin.StoryStatus_;
 import limeng32.mybatis.mybatisPlugin.cachePlugin.Conditionable;
 import limeng32.mybatis.mybatisPlugin.cachePlugin.Order;
 import limeng32.mybatis.mybatisPlugin.cachePlugin.PageParam;
@@ -101,6 +102,21 @@ public class AccountTest {
 		Assert.assertEquals("an%%n@live.cn", accounts[0].getEmail());
 	}
 
+	/** 测试condition:like功能2：在parameter为null和为空字符串时的情况 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testConditionLike2.xml")
+	@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testConditionLike2.xml")
+	public void testConditionLike2() {
+		Account_Condition ac = new Account_Condition(), ac2 = new Account_Condition();
+		ac.setEmailLike(null);
+		Collection<Account_> c = accountService.selectAll(ac);
+		Account_[] accounts = c.toArray(new Account_[c.size()]);
+		Assert.assertEquals(2, accounts.length);
+		ac2.setEmailLike("");
+		Collection<Account_> c2 = accountService.selectAll(ac);
+		Assert.assertEquals(2, c2.size());
+	}
+
 	/** 测试condition:headLike功能 */
 	@Test
 	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testConditionHeadLike.xml")
@@ -175,5 +191,28 @@ public class AccountTest {
 		Assert.assertEquals(2, accounts.length);
 		Assert.assertEquals(4, accounts[0].getId().intValue());
 		Assert.assertEquals(3, accounts[1].getId().intValue());
+	}
+
+	/** 测试CostumizeStatus功能 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testCostumizeStatus.xml")
+	@ExpectedDatabase(assertionMode = DatabaseAssertionMode.NON_STRICT, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testCostumizeStatus.result.xml")
+	@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testCostumizeStatus.xml")
+	public void testCostumizeStatus() {
+		Account_ a = accountService.select(1);
+		Assert.assertEquals("发布", a.getStatus().text());
+		Account_ ac = new Account_();
+		ac.setStatus(StoryStatus_.p);
+		Collection<Account_> c = accountService.selectAll(ac);
+		Assert.assertEquals(1, c.size());
+		Account_ a2 = accountService.select(2);
+		Assert.assertEquals(StoryStatus_.s, a2.getStatus());
+		a2.setStatus(StoryStatus_.c);
+		accountService.update(a2);
+		Account_ a3 = accountService.select(3);
+		Assert.assertNull(a3.getStatus());
+		accountService.updatePersistent(a3);
+		Account_ a4 = accountService.select(3);
+		Assert.assertNull(a4.getStatus());
 	}
 }

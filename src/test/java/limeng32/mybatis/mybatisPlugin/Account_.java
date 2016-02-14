@@ -31,6 +31,9 @@ public class Account_ extends PojoSupport<Account_> implements Serializable {
 	@FieldMapperAnnotation(dbFieldName = "opLock", jdbcType = JdbcType.INTEGER, opLockType = OpLockType.Version)
 	private Integer opLock;
 
+	@FieldMapperAnnotation(dbFieldName = "status", jdbcType = JdbcType.CHAR)
+	private StoryStatus_ status;
+
 	/**
 	 * 是否已激活
 	 * */
@@ -97,6 +100,14 @@ public class Account_ extends PojoSupport<Account_> implements Serializable {
 
 	public Integer getOpLock() {
 		return opLock;
+	}
+
+	public StoryStatus_ getStatus() {
+		return status;
+	}
+
+	public void setStatus(StoryStatus_ status) {
+		this.status = status;
 	}
 
 	public java.util.Collection<LoginLog_> getLoginLog() {
