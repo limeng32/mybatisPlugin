@@ -16,6 +16,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.IfProfileValue;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -46,6 +47,7 @@ public class AccountTest {
 	private AccountService accountService;
 
 	@Test
+	@IfProfileValue(name = "VOLATILE", value = "true")
 	public void testDataSource() {
 		Assert.assertNotNull(dataSource);
 		Assert.assertNotNull(dataSource.getUsername());
@@ -53,6 +55,7 @@ public class AccountTest {
 
 	/** 测试insert功能（有乐观锁） */
 	@Test
+	@IfProfileValue(name = "VOLATILE", value = "true")
 	@DatabaseSetup(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testInsert.xml")
 	@ExpectedDatabase(assertionMode = DatabaseAssertionMode.NON_STRICT, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testInsert.result.xml")
 	@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testInsert.xml")
@@ -69,6 +72,7 @@ public class AccountTest {
 
 	/** 测试update功能（有乐观锁） */
 	@Test
+	@IfProfileValue(name = "VOLATILE", value = "true")
 	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testUpdate.xml")
 	@ExpectedDatabase(assertionMode = DatabaseAssertionMode.NON_STRICT, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testUpdate.result.xml")
 	@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testUpdate.xml")
@@ -81,6 +85,7 @@ public class AccountTest {
 
 	/** 测试delete功能 */
 	@Test
+	@IfProfileValue(name = "VOLATILE", value = "true")
 	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testDelete.xml")
 	@ExpectedDatabase(assertionMode = DatabaseAssertionMode.NON_STRICT, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testDelete.result.xml")
 	@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testDelete.xml")
@@ -89,62 +94,9 @@ public class AccountTest {
 		accountService.delete(a);
 	}
 
-	/** 测试condition:like功能 */
-	@Test
-	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testConditionLike.xml")
-	@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testConditionLike.xml")
-	public void testConditionLike() {
-		Account_Condition ac = new Account_Condition();
-		ac.setEmailLike("%%");
-		Collection<Account_> c = accountService.selectAll(ac);
-		Account_[] accounts = c.toArray(new Account_[c.size()]);
-		Assert.assertEquals(1, accounts.length);
-		Assert.assertEquals("an%%n@live.cn", accounts[0].getEmail());
-	}
-
-	/** 测试condition:like功能2：在parameter为null和为空字符串时的情况 */
-	@Test
-	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testConditionLike2.xml")
-	@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testConditionLike2.xml")
-	public void testConditionLike2() {
-		Account_Condition ac = new Account_Condition(), ac2 = new Account_Condition();
-		ac.setEmailLike(null);
-		Collection<Account_> c = accountService.selectAll(ac);
-		Account_[] accounts = c.toArray(new Account_[c.size()]);
-		Assert.assertEquals(2, accounts.length);
-		ac2.setEmailLike("");
-		Collection<Account_> c2 = accountService.selectAll(ac);
-		Assert.assertEquals(2, c2.size());
-	}
-
-	/** 测试condition:headLike功能 */
-	@Test
-	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testConditionHeadLike.xml")
-	@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testConditionHeadLike.xml")
-	public void testConditionHeadLike() {
-		Account_Condition ac = new Account_Condition();
-		ac.setEmailHeadLike("ann");
-		Collection<Account_> c = accountService.selectAll(ac);
-		Account_[] accounts = c.toArray(new Account_[c.size()]);
-		Assert.assertEquals(1, accounts.length);
-		Assert.assertEquals("ann@live.cn", accounts[0].getEmail());
-	}
-
-	/** 测试condition:tailLike功能 */
-	@Test
-	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testConditionTailLike.xml")
-	@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testConditionTailLike.xml")
-	public void testConditionTailLike() {
-		Account_Condition ac = new Account_Condition();
-		ac.setEmailTailLike("live.cn");
-		Collection<Account_> c = accountService.selectAll(ac);
-		Account_[] accounts = c.toArray(new Account_[c.size()]);
-		Assert.assertEquals(1, accounts.length);
-		Assert.assertEquals("ann@live.cn", accounts[0].getEmail());
-	}
-
 	/** 测试sorter功能 */
 	@Test
+	@IfProfileValue(name = "VOLATILE", value = "true")
 	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testSorter.xml")
 	@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testSorter.xml")
 	public void testSorter() {
@@ -173,6 +125,7 @@ public class AccountTest {
 
 	/** 测试limiter功能 */
 	@Test
+	@IfProfileValue(name = "VOLATILE", value = "true")
 	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testLimiter.xml")
 	@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testLimiter.xml")
 	public void testLimiter() {
@@ -195,6 +148,7 @@ public class AccountTest {
 
 	/** 测试CostumizeStatus功能 */
 	@Test
+	@IfProfileValue(name = "VOLATILE", value = "true")
 	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testCostumizeStatus.xml")
 	@ExpectedDatabase(assertionMode = DatabaseAssertionMode.NON_STRICT, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testCostumizeStatus.result.xml")
 	@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/AccountTest.testCostumizeStatus.xml")

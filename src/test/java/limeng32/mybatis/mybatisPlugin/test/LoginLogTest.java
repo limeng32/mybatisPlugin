@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.IfProfileValue;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -38,6 +39,7 @@ public class LoginLogTest {
 	private LoginLogService loginLogService;
 
 	@Test
+	@IfProfileValue(name = "VOLATILE", value = "true")
 	public void testDataSource() {
 		Assert.assertNotNull(dataSource);
 		Assert.assertNotNull(dataSource.getUsername());
@@ -45,6 +47,7 @@ public class LoginLogTest {
 
 	/** 测试insert功能（无乐观锁） */
 	@Test
+	@IfProfileValue(name = "VOLATILE", value = "true")
 	@DatabaseSetup(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/LoginLogTest.testInsert.xml")
 	@ExpectedDatabase(assertionMode = DatabaseAssertionMode.NON_STRICT, value = "/limeng32/mybatis/mybatisPlugin/test/LoginLogTest.testInsert.result.xml")
 	@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/LoginLogTest.testInsert.xml")

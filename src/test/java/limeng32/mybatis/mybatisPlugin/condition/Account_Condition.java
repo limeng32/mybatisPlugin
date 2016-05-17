@@ -63,6 +63,9 @@ public class Account_Condition extends Account_ implements Conditionable {
 	@ConditionMapperAnnotation(dbFieldName = field_email, conditionType = ConditionType.TailLike)
 	private String emailTailLike;
 
+	@ConditionMapperAnnotation(dbFieldName = field_email, conditionType = ConditionType.MutilLikeAND)
+	private String emailMultiLike;
+
 	@Override
 	public Limitable getLimiter() {
 		return limiter;
@@ -105,6 +108,14 @@ public class Account_Condition extends Account_ implements Conditionable {
 
 	public void setEmailTailLike(String emailTailLike) {
 		this.emailTailLike = emailTailLike;
+	}
+
+	public String getEmailMultiLike() {
+		return emailMultiLike;
+	}
+
+	public void setEmailMultiLike(String emailMultiLike) {
+		this.emailMultiLike = emailMultiLike;
 	}
 
 }
