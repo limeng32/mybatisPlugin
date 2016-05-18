@@ -1,6 +1,8 @@
 package limeng32.mybatis.mybatisPlugin.test;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 import limeng32.mybatis.mybatisPlugin.AccountService;
 import limeng32.mybatis.mybatisPlugin.Account_;
@@ -107,17 +109,65 @@ public class ConditionTest {
 	@Test
 	@IfProfileValue(name = "VOLATILE", value = "true")
 	public void testSpliter() {
-		String spliter = " ";
+		String spliter = "\\s+";
 		String source = " 1 2  34 ";
 		String[] array = source.trim().split(spliter);
 		// for (String s : array) {
 		// System.out.println("1:" + s);
 		// }
-		Assert.assertEquals(4, array.length);
+		Assert.assertEquals(3, array.length);
+		Assert.assertEquals("34", array[2]);
 		String[] array2 = source.trim().split(spliter, 2);
 		// for (String s : array2) {
 		// System.out.println("2:" + s);
 		// }
 		Assert.assertEquals(2, array2.length);
+		Assert.assertEquals("2  34", array2[1]);
+	}
+
+	@Test
+	@IfProfileValue(name = "VOLATILE", value = "true")
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "/limeng32/mybatis/mybatisPlugin/test/ConditionTest.testMultiLikeAND.xml")
+	@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/ConditionTest.testMultiLikeAND.xml")
+	public void testMultiLikeAND() {
+		Account_Condition ac = new Account_Condition();
+		ac.setName("ann");
+		ac.setEmailLike("as");
+		List<String> multi = new LinkedList<>();
+		multi.add("a");
+		multi.add("s");
+		multi.add("d");
+		ac.setMultiLike(multi);
+		Collection<Account_> c = accountService.selectAll(ac);
+		Assert.assertEquals(1, c.size());
+		int conut = accountService.count(ac);
+		Assert.assertEquals(1, conut);
+		Account_Condition ac2 = new Account_Condition();
+		ac2.setName("ann");
+		ac2.setEmailLike("as");
+		List<String> multi2 = new LinkedList<>();
+		ac2.setMultiLike(multi2);
+		Collection<Account_> c2 = accountService.selectAll(ac2);
+		Assert.assertEquals(1, c2.size());
+	}
+
+	@Test
+	@IfProfileValue(name = "VOLATILE", value = "true")
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "/limeng32/mybatis/mybatisPlugin/test/ConditionTest.testMultiLikeOR.xml")
+	@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/ConditionTest.testMultiLikeOR.xml")
+	public void testMultiLikeOR() {
+		Account_Condition ac = new Account_Condition();
+		ac.setName("ann");
+		ac.setEmailLike("as");
+		List<String> multi = new LinkedList<>();
+		multi.add("a");
+		multi.add("s");
+		multi.add("d");
+		multi.add("z");
+		ac.setMultiLikeOR(multi);
+		Collection<Account_> c = accountService.selectAll(ac);
+		Assert.assertEquals(1, c.size());
+		int count = accountService.count(ac);
+		Assert.assertEquals(1, count);
 	}
 }

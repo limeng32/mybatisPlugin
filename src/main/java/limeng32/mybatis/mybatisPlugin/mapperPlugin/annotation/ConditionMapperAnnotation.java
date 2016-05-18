@@ -24,10 +24,4 @@ public @interface ConditionMapperAnnotation {
 	String dbFieldName();
 
 	ConditionType conditionType() default ConditionType.Equal;
-
-	/**
-	 * 
-	 * 多个条件字段的分隔符，默认为空格“ ”
-	 */
-	String mutilSpliter() default " ";
 }

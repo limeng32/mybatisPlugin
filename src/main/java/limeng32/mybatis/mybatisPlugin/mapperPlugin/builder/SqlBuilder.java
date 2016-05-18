@@ -299,6 +299,62 @@ public class SqlBuilder {
 		whereSql.append("} and ");
 	}
 
+	@SuppressWarnings("unchecked")
+	private static void dealConditionMultiLike(Object value,
+			StringBuffer whereSql, ConditionMapper conditionMapper,
+			ConditionType type, String tableName, String fieldNamePrefix) {
+		List<String> multiConditionList = (List<String>) value;
+		if (multiConditionList.size() > 0) {
+			whereSql.append(" (");
+			for (int i = 0; i < multiConditionList.size(); i++) {
+				if (tableName != null) {
+					whereSql.append(tableName).append(".");
+				}
+				whereSql.append(conditionMapper.getDbFieldName()).append(
+						" like #{");
+				if (fieldNamePrefix != null) {
+					whereSql.append(fieldNamePrefix).append(".");
+				}
+				if (conditionMapper.isForeignKey()) {
+					whereSql.append(conditionMapper.getFieldName()).append(".")
+							.append(conditionMapper.getForeignFieldName())
+							.append("[").append(i).append("]");
+				} else {
+					whereSql.append(conditionMapper.getFieldName()).append("[")
+							.append(i).append("]");
+				}
+				whereSql.append(",").append("jdbcType=")
+						.append(conditionMapper.getJdbcType().toString())
+						.append(",typeHandler=");
+				switch (type) {
+				case MultiLikeAND:
+					whereSql.append("ConditionLikeHandler");
+					whereSql.append("} and ");
+					break;
+				case MultiLikeOR:
+					whereSql.append("ConditionLikeHandler");
+					whereSql.append("} or ");
+					break;
+				default:
+					throw new RuntimeException(
+							"Sorry,I refuse to build sql for an ambiguous condition!");
+				}
+			}
+			switch (type) {
+			case MultiLikeAND:
+				whereSql.delete(whereSql.lastIndexOf(" and "),
+						whereSql.lastIndexOf(" and ") + 5);
+				break;
+			case MultiLikeOR:
+				whereSql.delete(whereSql.lastIndexOf(" or "),
+						whereSql.lastIndexOf(" or ") + 4);
+				break;
+			default:
+			}
+			whereSql.append(") and ");
+		}
+	}
+
 	private static void dealConditionEqual(Object object,
 			StringBuffer whereSql, Mapperable mapper, String tableName,
 			String fieldNamePrefix) {
@@ -647,8 +703,7 @@ public class SqlBuilder {
 		}
 		if (" where ".equals(whereSql.toString())) {
 			whereSql = new StringBuffer();
-		}
-		if (whereSql.indexOf("and") > -1) {
+		} else if (whereSql.indexOf("and") > -1) {
 			whereSql.delete(whereSql.lastIndexOf("and"),
 					whereSql.lastIndexOf("and") + 3);
 		}
@@ -699,8 +754,7 @@ public class SqlBuilder {
 		}
 		if (" where ".equals(whereSql.toString())) {
 			whereSql = new StringBuffer();
-		}
-		if (whereSql.indexOf("and") > -1) {
+		} else if (whereSql.indexOf("and") > -1) {
 			whereSql.delete(whereSql.lastIndexOf("and"),
 					whereSql.lastIndexOf("and") + 3);
 		}
@@ -812,6 +866,14 @@ public class SqlBuilder {
 				dealConditionLike(whereSql, conditionMapper,
 						ConditionType.TailLike, tableName, temp);
 				break;
+			case MultiLikeAND:
+				dealConditionMultiLike(value, whereSql, conditionMapper,
+						ConditionType.MultiLikeAND, tableName, temp);
+				break;
+			case MultiLikeOR:
+				dealConditionMultiLike(value, whereSql, conditionMapper,
+						ConditionType.MultiLikeOR, tableName, temp);
+				break;
 			default:
 				break;
 			}
@@ -897,6 +959,14 @@ public class SqlBuilder {
 			case TailLike:
 				dealConditionLike(whereSql, conditionMapper,
 						ConditionType.TailLike, tableName, temp);
+				break;
+			case MultiLikeAND:
+				dealConditionMultiLike(value, whereSql, conditionMapper,
+						ConditionType.MultiLikeAND, tableName, temp);
+				break;
+			case MultiLikeOR:
+				dealConditionMultiLike(value, whereSql, conditionMapper,
+						ConditionType.MultiLikeOR, tableName, temp);
 				break;
 			default:
 				break;

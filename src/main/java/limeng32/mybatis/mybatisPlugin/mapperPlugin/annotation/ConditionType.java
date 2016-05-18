@@ -7,10 +7,10 @@ public enum ConditionType {
 	/* 结尾like匹配 */TailLike,
 	/*
 	 * 多like条件匹配 ， 与关系
-	 */MutilLikeAND,
+	 */MultiLikeAND,
 	/*
 	 * 多like条件匹配 ， 或关系
-	 */MutilLikeOR,
+	 */MultiLikeOR,
 	/*
 	 * 大于 ， 未完成
 	 */GreaterThan,

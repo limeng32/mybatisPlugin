@@ -1,5 +1,7 @@
 package limeng32.mybatis.mybatisPlugin.condition;
 
+import java.util.List;
+
 import limeng32.mybatis.mybatisPlugin.Account_;
 import limeng32.mybatis.mybatisPlugin.cachePlugin.Conditionable;
 import limeng32.mybatis.mybatisPlugin.cachePlugin.Limitable;
@@ -63,8 +65,11 @@ public class Account_Condition extends Account_ implements Conditionable {
 	@ConditionMapperAnnotation(dbFieldName = field_email, conditionType = ConditionType.TailLike)
 	private String emailTailLike;
 
-	@ConditionMapperAnnotation(dbFieldName = field_email, conditionType = ConditionType.MutilLikeAND)
-	private String emailMultiLike;
+	@ConditionMapperAnnotation(dbFieldName = field_email, conditionType = ConditionType.MultiLikeAND)
+	private List<String> multiLike;
+
+	@ConditionMapperAnnotation(dbFieldName = field_email, conditionType = ConditionType.MultiLikeOR)
+	private List<String> multiLikeOR;
 
 	@Override
 	public Limitable getLimiter() {
@@ -110,12 +115,20 @@ public class Account_Condition extends Account_ implements Conditionable {
 		this.emailTailLike = emailTailLike;
 	}
 
-	public String getEmailMultiLike() {
-		return emailMultiLike;
+	public List<String> getMultiLike() {
+		return multiLike;
 	}
 
-	public void setEmailMultiLike(String emailMultiLike) {
-		this.emailMultiLike = emailMultiLike;
+	public void setMultiLike(List<String> multiLike) {
+		this.multiLike = multiLike;
+	}
+
+	public List<String> getMultiLikeOR() {
+		return multiLikeOR;
+	}
+
+	public void setMultiLikeOR(List<String> multiLikeOR) {
+		this.multiLikeOR = multiLikeOR;
 	}
 
 }
