@@ -1,11 +1,14 @@
 package limeng32.mybatis.mybatisPlugin.test;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
 import limeng32.mybatis.mybatisPlugin.AccountService;
 import limeng32.mybatis.mybatisPlugin.Account_;
+import limeng32.mybatis.mybatisPlugin.LoginLogService;
+import limeng32.mybatis.mybatisPlugin.LoginLog_;
 import limeng32.mybatis.mybatisPlugin.condition.Account_Condition;
 
 import org.apache.commons.dbcp.BasicDataSource;
@@ -40,6 +43,9 @@ public class ConditionTest {
 
 	@Autowired
 	private AccountService accountService;
+
+	@Autowired
+	private LoginLogService loginLogService;
 
 	@Test
 	@IfProfileValue(name = "VOLATILE", value = "true")
@@ -133,7 +139,7 @@ public class ConditionTest {
 		Account_Condition ac = new Account_Condition();
 		ac.setName("ann");
 		ac.setEmailLike("as");
-		List<String> multi = new LinkedList<>();
+		List<String> multi = new ArrayList<>();
 		multi.add("a");
 		multi.add("s");
 		multi.add("d");
@@ -149,6 +155,22 @@ public class ConditionTest {
 		ac2.setMultiLike(multi2);
 		Collection<Account_> c2 = accountService.selectAll(ac2);
 		Assert.assertEquals(1, c2.size());
+		Account_Condition ac3 = new Account_Condition();
+		List<String> multi3 = new ArrayList<>();
+		multi3.add(null);
+		multi3.add("a");
+		multi3.add(null);
+		ac3.setMultiLike(multi3);
+		Collection<Account_> c3 = accountService.selectAll(ac3);
+		Assert.assertEquals(1, c3.size());
+		LoginLog_ lc = new LoginLog_();
+		Account_Condition ac4 = new Account_Condition();
+		List<String> multi4 = new ArrayList<>();
+		multi4.add("a");
+		ac4.setMultiLike(multi4);
+		lc.setAccount(ac4);
+		Collection<LoginLog_> c4 = loginLogService.selectAll(lc);
+		Assert.assertEquals(1, c4.size());
 	}
 
 	@Test
@@ -159,15 +181,37 @@ public class ConditionTest {
 		Account_Condition ac = new Account_Condition();
 		ac.setName("ann");
 		ac.setEmailLike("as");
-		List<String> multi = new LinkedList<>();
-		multi.add("a");
-		multi.add("s");
-		multi.add("d");
-		multi.add("z");
+		List<String> multi = new ArrayList<>();
+		multi.add(null);
+		multi.add(null);
+		multi.add(null);
+		multi.add(null);
 		ac.setMultiLikeOR(multi);
 		Collection<Account_> c = accountService.selectAll(ac);
 		Assert.assertEquals(1, c.size());
 		int count = accountService.count(ac);
 		Assert.assertEquals(1, count);
+		Account_Condition ac2 = new Account_Condition();
+		ac2.setName("ann");
+		ac2.setEmailLike("as");
+		List<String> multi2 = new ArrayList<>();
+		multi2.add(null);
+		multi2.add("a");
+		multi2.add("sd");
+		multi2.add("z");
+		ac2.setMultiLikeOR(multi2);
+		Collection<Account_> c2 = accountService.selectAll(ac2);
+		Assert.assertEquals(1, c2.size());
+		LoginLog_ lc = new LoginLog_();
+		Account_Condition ac3 = new Account_Condition();
+		List<String> multi3 = new ArrayList<>();
+		multi3.add(null);
+		multi3.add("a");
+		multi3.add("sd");
+		multi3.add("z");
+		ac3.setMultiLikeOR(multi3);
+		lc.setAccount(ac3);
+		Collection<LoginLog_> c3 = loginLogService.selectAll(lc);
+		Assert.assertEquals(1, c3.size());
 	}
 }

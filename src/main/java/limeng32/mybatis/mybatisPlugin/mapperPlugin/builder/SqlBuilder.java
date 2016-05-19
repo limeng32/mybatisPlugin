@@ -305,53 +305,64 @@ public class SqlBuilder {
 			ConditionType type, String tableName, String fieldNamePrefix) {
 		List<String> multiConditionList = (List<String>) value;
 		if (multiConditionList.size() > 0) {
-			whereSql.append(" (");
-			for (int i = 0; i < multiConditionList.size(); i++) {
-				if (tableName != null) {
-					whereSql.append(tableName).append(".");
+			StringBuffer tempWhereSql = new StringBuffer();
+			tempWhereSql.append(" (");
+			int j = -1;
+			boolean allNull = true;
+			for (String s : multiConditionList) {
+				j++;
+				if (s != null) {
+					allNull = false;
+					if (tableName != null) {
+						tempWhereSql.append(tableName).append(".");
+					}
+					tempWhereSql.append(conditionMapper.getDbFieldName())
+							.append(" like #{");
+					if (fieldNamePrefix != null) {
+						tempWhereSql.append(fieldNamePrefix).append(".");
+					}
+					if (conditionMapper.isForeignKey()) {
+						tempWhereSql.append(conditionMapper.getFieldName())
+								.append(".")
+								.append(conditionMapper.getForeignFieldName())
+								.append("[").append(j).append("]");
+					} else {
+						tempWhereSql.append(conditionMapper.getFieldName())
+								.append("[").append(j).append("]");
+					}
+					tempWhereSql.append(",").append("jdbcType=")
+							.append(conditionMapper.getJdbcType().toString())
+							.append(",typeHandler=");
+					switch (type) {
+					case MultiLikeAND:
+						tempWhereSql.append("ConditionLikeHandler");
+						tempWhereSql.append("} and ");
+						break;
+					case MultiLikeOR:
+						tempWhereSql.append("ConditionLikeHandler");
+						tempWhereSql.append("} or ");
+						break;
+					default:
+						throw new RuntimeException(
+								"Sorry,I refuse to build sql for an ambiguous condition!");
+					}
 				}
-				whereSql.append(conditionMapper.getDbFieldName()).append(
-						" like #{");
-				if (fieldNamePrefix != null) {
-					whereSql.append(fieldNamePrefix).append(".");
-				}
-				if (conditionMapper.isForeignKey()) {
-					whereSql.append(conditionMapper.getFieldName()).append(".")
-							.append(conditionMapper.getForeignFieldName())
-							.append("[").append(i).append("]");
-				} else {
-					whereSql.append(conditionMapper.getFieldName()).append("[")
-							.append(i).append("]");
-				}
-				whereSql.append(",").append("jdbcType=")
-						.append(conditionMapper.getJdbcType().toString())
-						.append(",typeHandler=");
+			}
+			if (!allNull) {
 				switch (type) {
 				case MultiLikeAND:
-					whereSql.append("ConditionLikeHandler");
-					whereSql.append("} and ");
+					tempWhereSql.delete(tempWhereSql.lastIndexOf(" and "),
+							tempWhereSql.lastIndexOf(" and ") + 5);
 					break;
 				case MultiLikeOR:
-					whereSql.append("ConditionLikeHandler");
-					whereSql.append("} or ");
+					tempWhereSql.delete(tempWhereSql.lastIndexOf(" or "),
+							tempWhereSql.lastIndexOf(" or ") + 4);
 					break;
 				default:
-					throw new RuntimeException(
-							"Sorry,I refuse to build sql for an ambiguous condition!");
 				}
+				tempWhereSql.append(") and ");
+				whereSql.append(tempWhereSql);
 			}
-			switch (type) {
-			case MultiLikeAND:
-				whereSql.delete(whereSql.lastIndexOf(" and "),
-						whereSql.lastIndexOf(" and ") + 5);
-				break;
-			case MultiLikeOR:
-				whereSql.delete(whereSql.lastIndexOf(" or "),
-						whereSql.lastIndexOf(" or ") + 4);
-				break;
-			default:
-			}
-			whereSql.append(") and ");
 		}
 	}
 
