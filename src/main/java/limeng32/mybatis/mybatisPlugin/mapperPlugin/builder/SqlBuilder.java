@@ -312,7 +312,9 @@ public class SqlBuilder {
 			for (String s : multiConditionList) {
 				j++;
 				if (s != null) {
-					allNull = false;
+					if (allNull) {
+						allNull = false;
+					}
 					if (tableName != null) {
 						tempWhereSql.append(tableName).append(".");
 					}
