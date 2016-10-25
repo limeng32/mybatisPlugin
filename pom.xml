@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>limeng32.mybatis</groupId>
   <artifactId>mybatisPlugin</artifactId>
-  <version>1.2.1-SNAPSHOT</version>
+  <version>1.2.1</version>
   <name>Mybatis Plugin</name>
   <properties>
     <junit.version>4.7</junit.version>

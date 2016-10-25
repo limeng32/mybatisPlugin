@@ -22,8 +22,26 @@ public class LoginLog_Condition extends LoginLog_ implements Conditionable {
 	@ConditionMapperAnnotation(dbFieldName = "loginTime", conditionType = ConditionType.GreaterThan)
 	private Date loginTimeGreaterThan;
 
+	@ConditionMapperAnnotation(dbFieldName = "loginTime", conditionType = ConditionType.GreaterOrEqual)
+	private Date loginTimeGreaterOrEqual;
+
+	@ConditionMapperAnnotation(dbFieldName = "loginTime", conditionType = ConditionType.NotEqual)
+	private Date loginTimeNotEqual;
+
 	@ConditionMapperAnnotation(dbFieldName = "id", conditionType = ConditionType.GreaterThan)
 	private Integer idGreaterThan;
+
+	@ConditionMapperAnnotation(dbFieldName = "id", conditionType = ConditionType.GreaterOrEqual)
+	private Integer idGreaterOrEqual;
+
+	@ConditionMapperAnnotation(dbFieldName = "id", conditionType = ConditionType.LessThan)
+	private Integer idLessThan;
+
+	@ConditionMapperAnnotation(dbFieldName = "id", conditionType = ConditionType.LessOrEqual)
+	private Integer idLessOrEqual;
+
+	@ConditionMapperAnnotation(dbFieldName = "id", conditionType = ConditionType.NotEqual)
+	private Integer idNotEqual;
 
 	@Override
 	public Limitable getLimiter() {
@@ -59,6 +77,54 @@ public class LoginLog_Condition extends LoginLog_ implements Conditionable {
 
 	public void setIdGreaterThan(Integer idGreaterThan) {
 		this.idGreaterThan = idGreaterThan;
+	}
+
+	public Date getLoginTimeGreaterOrEqual() {
+		return loginTimeGreaterOrEqual;
+	}
+
+	public void setLoginTimeGreaterOrEqual(Date loginTimeGreaterOrEqual) {
+		this.loginTimeGreaterOrEqual = loginTimeGreaterOrEqual;
+	}
+
+	public Date getLoginTimeNotEqual() {
+		return loginTimeNotEqual;
+	}
+
+	public void setLoginTimeNotEqual(Date loginTimeNotEqual) {
+		this.loginTimeNotEqual = loginTimeNotEqual;
+	}
+
+	public Integer getIdGreaterOrEqual() {
+		return idGreaterOrEqual;
+	}
+
+	public void setIdGreaterOrEqual(Integer idGreaterOrEqual) {
+		this.idGreaterOrEqual = idGreaterOrEqual;
+	}
+
+	public Integer getIdLessThan() {
+		return idLessThan;
+	}
+
+	public void setIdLessThan(Integer idLessThan) {
+		this.idLessThan = idLessThan;
+	}
+
+	public Integer getIdLessOrEqual() {
+		return idLessOrEqual;
+	}
+
+	public void setIdLessOrEqual(Integer idLessOrEqual) {
+		this.idLessOrEqual = idLessOrEqual;
+	}
+
+	public Integer getIdNotEqual() {
+		return idNotEqual;
+	}
+
+	public void setIdNotEqual(Integer idNotEqual) {
+		this.idNotEqual = idNotEqual;
 	}
 
 }

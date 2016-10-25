@@ -404,12 +404,16 @@ public class SqlBuilder {
 			break;
 		case GreaterOrEqual:
 			whereSql.append(" >= ");
+			break;
 		case LessThan:
 			whereSql.append(" < ");
+			break;
 		case LessOrEqual:
 			whereSql.append(" <= ");
+			break;
 		case NotEqual:
 			whereSql.append(" <> ");
+			break;
 		default:
 			throw new RuntimeException(
 					"Sorry,I refuse to build sql for an ambiguous condition!");

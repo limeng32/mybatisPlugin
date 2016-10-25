@@ -46,16 +46,51 @@ public class NotEqualConditionTest {
 	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "/limeng32/mybatis/mybatisPlugin/test/NotEqualConditionTest.testConditionGreaterThan.xml")
 	@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/NotEqualConditionTest.testConditionGreaterThan.xml")
 	public void testConditionGreaterThan() {
-		LoginLog_Condition lc = new LoginLog_Condition();
+		LoginLog_Condition lc = new LoginLog_Condition(), lc2 = new LoginLog_Condition(), lc3 = new LoginLog_Condition(), lc4 = new LoginLog_Condition();
 		lc.setLoginTimeGreaterThan(new Date(1));
 		lc.setIdGreaterThan(0);
 		Collection<LoginLog_> c = loginLogService.selectAll(lc);
 		Assert.assertEquals(1, c.size());
 		LoginLog_[] loginlogs = c.toArray(new LoginLog_[c.size()]);
 		Assert.assertEquals("0.0.0.1", loginlogs[0].getLoginIP());
-		LoginLog_Condition lc2 = new LoginLog_Condition();
+
 		lc2.setLoginTimeGreaterThan(new Date());
 		Collection<LoginLog_> c2 = loginLogService.selectAll(lc2);
 		Assert.assertEquals(0, c2.size());
+
+		lc3.setIdGreaterThan(10);
+		int count3 = loginLogService.count(lc3);
+		Assert.assertEquals(0, count3);
+		lc3.setIdGreaterThan(null);
+		lc3.setIdGreaterOrEqual(10);
+		count3 = loginLogService.count(lc3);
+		Assert.assertEquals(1, count3);
+		lc3.setIdGreaterOrEqual(null);
+		lc3.setLoginTime(loginlogs[0].getLoginTime());
+		count3 = loginLogService.count(lc3);
+		Assert.assertEquals(1, count3);
+		lc3.setLoginTime(null);
+		lc3.setLoginTimeNotEqual(loginlogs[0].getLoginTime());
+		count3 = loginLogService.count(lc3);
+		Assert.assertEquals(0, count3);
+
+		lc4.setIdGreaterThan(9);
+		int count4 = loginLogService.count(lc4);
+		Assert.assertEquals(1, count4);
+		lc4.setIdGreaterThan(null);
+		lc4.setIdLessThan(11);
+		count4 = loginLogService.count(lc4);
+		Assert.assertEquals(1, count4);
+		lc4.setIdLessThan(10);
+		count4 = loginLogService.count(lc4);
+		Assert.assertEquals(0, count4);
+		lc4.setIdLessThan(null);
+		lc4.setIdLessOrEqual(10);
+		count4 = loginLogService.count(lc4);
+		Assert.assertEquals(1, count4);
+		lc4.setIdLessOrEqual(null);
+		lc4.setIdNotEqual(10);
+		count4 = loginLogService.count(lc4);
+		Assert.assertEquals(0, count4);
 	}
 }
