@@ -284,13 +284,13 @@ public class SqlBuilder {
 				.append(",typeHandler=");
 		switch (type) {
 		case Like:
-			whereSql.append("ConditionLikeHandler");
+			whereSql.append("limeng32.mybatis.mybatisPlugin.mapperPlugin.handler.ConditionLikeHandler");
 			break;
 		case HeadLike:
-			whereSql.append("ConditionHeadLikeHandler");
+			whereSql.append("limeng32.mybatis.mybatisPlugin.mapperPlugin.handler.ConditionHeadLikeHandler");
 			break;
 		case TailLike:
-			whereSql.append("ConditionTailLikeHandler");
+			whereSql.append("limeng32.mybatis.mybatisPlugin.mapperPlugin.handler.ConditionTailLikeHandler");
 			break;
 		default:
 			throw new RuntimeException(
@@ -375,6 +375,46 @@ public class SqlBuilder {
 			whereSql.append(tableName).append(".");
 		}
 		whereSql.append(mapper.getDbFieldName()).append(" = #{");
+		if (fieldNamePrefix != null) {
+			whereSql.append(fieldNamePrefix).append(".");
+		}
+		if (mapper.isForeignKey()) {
+			whereSql.append(mapper.getFieldName()).append(".")
+					.append(mapper.getForeignFieldName());
+		} else {
+			whereSql.append(mapper.getFieldName());
+		}
+		if (mapper.getJdbcType() != null) {
+			whereSql.append(",").append("jdbcType=")
+					.append(mapper.getJdbcType().toString());
+		}
+		whereSql.append("} and ");
+	}
+
+	private static void dealConditionNotEqual(StringBuffer whereSql,
+			Mapperable mapper, ConditionType type, String tableName,
+			String fieldNamePrefix) {
+		if (tableName != null) {
+			whereSql.append(tableName).append(".");
+		}
+		whereSql.append(mapper.getDbFieldName());
+		switch (type) {
+		case GreaterThan:
+			whereSql.append(" > ");
+			break;
+		case GreaterOrEqual:
+			whereSql.append(" >= ");
+		case LessThan:
+			whereSql.append(" < ");
+		case LessOrEqual:
+			whereSql.append(" <= ");
+		case NotEqual:
+			whereSql.append(" <> ");
+		default:
+			throw new RuntimeException(
+					"Sorry,I refuse to build sql for an ambiguous condition!");
+		}
+		whereSql.append("#{");
 		if (fieldNamePrefix != null) {
 			whereSql.append(fieldNamePrefix).append(".");
 		}
@@ -879,6 +919,26 @@ public class SqlBuilder {
 				dealConditionLike(whereSql, conditionMapper,
 						ConditionType.TailLike, tableName, temp);
 				break;
+			case GreaterThan:
+				dealConditionNotEqual(whereSql, conditionMapper,
+						ConditionType.GreaterThan, tableName, temp);
+				break;
+			case GreaterOrEqual:
+				dealConditionNotEqual(whereSql, conditionMapper,
+						ConditionType.GreaterOrEqual, tableName, temp);
+				break;
+			case LessThan:
+				dealConditionNotEqual(whereSql, conditionMapper,
+						ConditionType.LessThan, tableName, temp);
+				break;
+			case LessOrEqual:
+				dealConditionNotEqual(whereSql, conditionMapper,
+						ConditionType.LessOrEqual, tableName, temp);
+				break;
+			case NotEqual:
+				dealConditionNotEqual(whereSql, conditionMapper,
+						ConditionType.NotEqual, tableName, temp);
+				break;
 			case MultiLikeAND:
 				dealConditionMultiLike(value, whereSql, conditionMapper,
 						ConditionType.MultiLikeAND, tableName, temp);
@@ -972,6 +1032,26 @@ public class SqlBuilder {
 			case TailLike:
 				dealConditionLike(whereSql, conditionMapper,
 						ConditionType.TailLike, tableName, temp);
+				break;
+			case GreaterThan:
+				dealConditionNotEqual(whereSql, conditionMapper,
+						ConditionType.GreaterThan, tableName, temp);
+				break;
+			case GreaterOrEqual:
+				dealConditionNotEqual(whereSql, conditionMapper,
+						ConditionType.GreaterOrEqual, tableName, temp);
+				break;
+			case LessThan:
+				dealConditionNotEqual(whereSql, conditionMapper,
+						ConditionType.LessThan, tableName, temp);
+				break;
+			case LessOrEqual:
+				dealConditionNotEqual(whereSql, conditionMapper,
+						ConditionType.LessOrEqual, tableName, temp);
+				break;
+			case NotEqual:
+				dealConditionNotEqual(whereSql, conditionMapper,
+						ConditionType.NotEqual, tableName, temp);
 				break;
 			case MultiLikeAND:
 				dealConditionMultiLike(value, whereSql, conditionMapper,
