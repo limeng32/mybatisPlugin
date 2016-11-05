@@ -95,6 +95,7 @@ public class EnhancedCachingManagerImpl implements EnhancedCachingManager {
 									observerMethods.put(clazz1,
 											new HashSet<Method>());
 								}
+								/* 这里采用迭代的方式实现追加观察者的观察者 */
 								observerMethods.get(clazz1).add(method);
 							}
 							break;
@@ -113,8 +114,38 @@ public class EnhancedCachingManagerImpl implements EnhancedCachingManager {
 					}
 				}
 			}
+			observerMethodsIteration(observerMethods);
 			buildObservers(triggerMethods, observerMethods);
 		}
+	}
+
+	private void observerMethodsIteration(
+			Map<Class<?>, Set<Method>> observerMethodMap) {
+		Map<Class<?>, Set<Method>> temp = new ConcurrentHashMap<>();
+		for (Class<?> clazz : observerMethodMap.keySet()) {
+			Set<Method> observerMethodSet = observerMethodMap.get(clazz);
+			for (Method method : observerMethodSet) {
+				if ("select".equals(method.getName())) {
+					Class<?> clazz1 = method.getReturnType();
+					if (observerMethodMap.containsKey(clazz1)) {
+						System.out.println("1====================:"
+								+ method.getName());
+						System.out.println("2====================:" + clazz1);
+						temp.put(clazz, observerMethodMap.get(clazz1));
+						System.out.println("3====================:"
+								+ observerMethodMap.get(clazz1));
+					}
+				}
+			}
+		}
+		System.out.println("4====================:" + temp);
+		for (Class<?> clazz : observerMethodMap.keySet()) {
+			if (temp.containsKey(clazz)) {
+				Set<Method> observerMethodSet = observerMethodMap.get(clazz);
+				observerMethodSet.addAll(temp.get(clazz));
+			}
+		}
+		System.out.println("5====================:" + observerMethodMap);
 	}
 
 	@Override

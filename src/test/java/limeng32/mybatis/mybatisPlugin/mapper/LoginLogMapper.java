@@ -12,7 +12,7 @@ import limeng32.mybatis.mybatisPlugin.cachePlugin.annotation.CacheRoleType;
 public interface LoginLogMapper extends MapperFace<LoginLog_> {
 
 	@Override
-	@CacheAnnotation(MappedClass = { Account_.class, Role_.class }, role = CacheRoleType.Observer)
+	@CacheAnnotation(MappedClass = { Account_.class }, role = CacheRoleType.Observer)
 	public LoginLog_ select(int id);
 
 	@Override
