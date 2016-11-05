@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="limeng32.mybatis.mybatisPlugin.mapper.AccountMapper">
+<mapper namespace="limeng32.mybatis.mybatisPlugin.mapper.RoleMapper">
 	<cache />
 
 	<select id="select" resultMap="result">#{id}</select>
@@ -21,10 +21,7 @@
 
 	<update id="enable" />
 
-	<resultMap id="result" type="Account_" autoMapping="true">
+	<resultMap id="result" type="Role_" autoMapping="true">
 		<id property="id" column="id" />
-		<association property="role" javaType="Role_"
-			select="limeng32.mybatis.mybatisPlugin.mapper.RoleMapper.select"
-			column="role_id" />
 	</resultMap>
 </mapper>
