@@ -14,6 +14,8 @@ import limeng32.mybatis.mybatisPlugin.util.ReflectHelper;
 
 import org.apache.ibatis.cache.Cache;
 
+import com.alibaba.fastjson.JSON;
+
 public class EnhancedCachingManagerImpl implements EnhancedCachingManager {
 
 	// 每一个statementId 更新依赖的statementId集合
@@ -114,13 +116,14 @@ public class EnhancedCachingManagerImpl implements EnhancedCachingManager {
 					}
 				}
 			}
-			observerMethodsIteration(observerMethods);
+			observerMethodsFission(observerMethods);
 			buildObservers(triggerMethods, observerMethods);
 		}
 	}
 
-	private void observerMethodsIteration(
+	private void observerMethodsFission(
 			Map<Class<?>, Set<Method>> observerMethodMap) {
+		String key1 = JSON.toJSONString(observerMethodMap);
 		Map<Class<?>, Set<Method>> temp = new ConcurrentHashMap<>();
 		for (Class<?> clazz : observerMethodMap.keySet()) {
 			Set<Method> observerMethodSet = observerMethodMap.get(clazz);
@@ -128,24 +131,21 @@ public class EnhancedCachingManagerImpl implements EnhancedCachingManager {
 				if ("select".equals(method.getName())) {
 					Class<?> clazz1 = method.getReturnType();
 					if (observerMethodMap.containsKey(clazz1)) {
-						System.out.println("1====================:"
-								+ method.getName());
-						System.out.println("2====================:" + clazz1);
 						temp.put(clazz, observerMethodMap.get(clazz1));
-						System.out.println("3====================:"
-								+ observerMethodMap.get(clazz1));
 					}
 				}
 			}
 		}
-		System.out.println("4====================:" + temp);
 		for (Class<?> clazz : observerMethodMap.keySet()) {
 			if (temp.containsKey(clazz)) {
 				Set<Method> observerMethodSet = observerMethodMap.get(clazz);
 				observerMethodSet.addAll(temp.get(clazz));
 			}
 		}
-		System.out.println("5====================:" + observerMethodMap);
+		String key2 = JSON.toJSONString(observerMethodMap);
+		if (!key1.equals(key2)) {
+			observerMethodsFission(observerMethodMap);
+		}
 	}
 
 	@Override

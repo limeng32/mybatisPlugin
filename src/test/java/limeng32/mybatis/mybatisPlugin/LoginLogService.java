@@ -15,6 +15,9 @@ public class LoginLogService extends ServiceSupport<LoginLog_> implements
 	@Autowired
 	private LoginLogMapper mapper;
 
+	@Autowired
+	private DetailService detailService;
+
 	@Override
 	public LoginLog_ select(int id) {
 		return supportSelect(mapper, id);
@@ -58,5 +61,11 @@ public class LoginLogService extends ServiceSupport<LoginLog_> implements
 	@Override
 	public int count(LoginLog_ t) {
 		return supportCount(mapper, t);
+	}
+
+	@Override
+	public void loadDetail(LoginLog_ loginlog, Detail_ detail) {
+		detail.setLoginLog(loginlog);
+		loginlog.setDetail(detailService.selectAll(detail));
 	}
 }

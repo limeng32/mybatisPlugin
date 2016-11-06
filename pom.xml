@@ -2,13 +2,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>limeng32.mybatis</groupId>
   <artifactId>mybatisPlugin</artifactId>
-  <version>1.2.2-SNAPSHPT</version>
+  <version>1.2.2</version>
   <name>Mybatis Plugin</name>
   <properties>
     <junit.version>4.7</junit.version>
     <mybatis.version>3.2.5</mybatis.version>
     <commons-beanutils.version>1.8.3</commons-beanutils.version>
     <mirage-util.version>1.1.0</mirage-util.version>
+    <fastjson.version>1.2.7</fastjson.version>
   </properties>
   <dependencies>
   	<dependency>
@@ -145,6 +146,11 @@
   		<artifactId>unitils-easymock</artifactId>
   		<version>3.4.2</version>
   		<scope>test</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.alibaba</groupId>
+  		<artifactId>fastjson</artifactId>
+  		<version>${fastjson.version}</version>
   	</dependency>
   </dependencies>
   <build>

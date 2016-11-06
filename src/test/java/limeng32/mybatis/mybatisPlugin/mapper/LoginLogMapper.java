@@ -4,8 +4,8 @@ import java.util.Collection;
 
 import limeng32.mirage.util.mapper.MapperFace;
 import limeng32.mybatis.mybatisPlugin.Account_;
+import limeng32.mybatis.mybatisPlugin.Detail_;
 import limeng32.mybatis.mybatisPlugin.LoginLog_;
-import limeng32.mybatis.mybatisPlugin.Role_;
 import limeng32.mybatis.mybatisPlugin.cachePlugin.annotation.CacheAnnotation;
 import limeng32.mybatis.mybatisPlugin.cachePlugin.annotation.CacheRoleType;
 
@@ -43,4 +43,6 @@ public interface LoginLogMapper extends MapperFace<LoginLog_> {
 	@Override
 	@CacheAnnotation(MappedClass = { Account_.class }, role = CacheRoleType.Observer)
 	public int count(LoginLog_ t);
+
+	public void loadDetail(LoginLog_ loginLog, Detail_ detail);
 }
