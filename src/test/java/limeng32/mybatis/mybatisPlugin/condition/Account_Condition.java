@@ -1,5 +1,6 @@
 package limeng32.mybatis.mybatisPlugin.condition;
 
+import java.util.Collection;
 import java.util.List;
 
 import limeng32.mybatis.mybatisPlugin.Account_;
@@ -29,6 +30,8 @@ public class Account_Condition extends Account_ implements Conditionable {
 	public static final String field_activated = "activated";
 
 	public static final String field_activateValue = "activateValue";
+
+	public static final String field_opLock = "opLock";
 
 	public enum Field implements Queryable {
 		tableName(field_tableName), id(field_id), name(field_name), email(
@@ -70,6 +73,18 @@ public class Account_Condition extends Account_ implements Conditionable {
 
 	@ConditionMapperAnnotation(dbFieldName = field_email, conditionType = ConditionType.MultiLikeOR)
 	private List<String> multiLikeOR;
+
+	@ConditionMapperAnnotation(dbFieldName = field_name, conditionType = ConditionType.In)
+	private Collection<String> nameIn;
+
+	@ConditionMapperAnnotation(dbFieldName = field_opLock, conditionType = ConditionType.In)
+	private Collection<Integer> opLockIn;
+
+	@ConditionMapperAnnotation(dbFieldName = field_name, conditionType = ConditionType.NotIn)
+	private Collection<String> nameNotIn;
+
+	@ConditionMapperAnnotation(dbFieldName = field_opLock, conditionType = ConditionType.NotIn)
+	private Collection<Integer> opLockNotIn;
 
 	@Override
 	public Limitable getLimiter() {
@@ -131,4 +146,35 @@ public class Account_Condition extends Account_ implements Conditionable {
 		this.multiLikeOR = multiLikeOR;
 	}
 
+	public Collection<String> getNameIn() {
+		return nameIn;
+	}
+
+	public void setNameIn(Collection<String> nameIn) {
+		this.nameIn = nameIn;
+	}
+
+	public Collection<Integer> getOpLockIn() {
+		return opLockIn;
+	}
+
+	public void setOpLockIn(Collection<Integer> opLockIn) {
+		this.opLockIn = opLockIn;
+	}
+
+	public Collection<String> getNameNotIn() {
+		return nameNotIn;
+	}
+
+	public void setNameNotIn(Collection<String> nameNotIn) {
+		this.nameNotIn = nameNotIn;
+	}
+
+	public Collection<Integer> getOpLockNotIn() {
+		return opLockNotIn;
+	}
+
+	public void setOpLockNotIn(Collection<Integer> opLockNotIn) {
+		this.opLockNotIn = opLockNotIn;
+	}
 }

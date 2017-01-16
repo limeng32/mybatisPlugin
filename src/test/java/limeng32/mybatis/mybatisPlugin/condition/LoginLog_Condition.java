@@ -1,5 +1,6 @@
 package limeng32.mybatis.mybatisPlugin.condition;
 
+import java.util.Collection;
 import java.util.Date;
 
 import limeng32.mybatis.mybatisPlugin.LoginLog_;
@@ -42,6 +43,18 @@ public class LoginLog_Condition extends LoginLog_ implements Conditionable {
 
 	@ConditionMapperAnnotation(dbFieldName = "id", conditionType = ConditionType.NotEqual)
 	private Integer idNotEqual;
+
+	@ConditionMapperAnnotation(dbFieldName = "loginIP", conditionType = ConditionType.In)
+	private Collection<String> loginIPIn;
+
+	@ConditionMapperAnnotation(dbFieldName = "loginTime", conditionType = ConditionType.In)
+	private Collection<Date> loginTimeIn;
+
+	@ConditionMapperAnnotation(dbFieldName = "loginIP", conditionType = ConditionType.NotIn)
+	private Collection<String> loginIPNotIn;
+
+	@ConditionMapperAnnotation(dbFieldName = "loginTime", conditionType = ConditionType.NotIn)
+	private Collection<Date> loginTimeNotIn;
 
 	@Override
 	public Limitable getLimiter() {
@@ -127,4 +140,35 @@ public class LoginLog_Condition extends LoginLog_ implements Conditionable {
 		this.idNotEqual = idNotEqual;
 	}
 
+	public Collection<String> getLoginIPIn() {
+		return loginIPIn;
+	}
+
+	public void setLoginIPIn(Collection<String> loginIPIn) {
+		this.loginIPIn = loginIPIn;
+	}
+
+	public Collection<Date> getLoginTimeIn() {
+		return loginTimeIn;
+	}
+
+	public void setLoginTimeIn(Collection<Date> loginTimeIn) {
+		this.loginTimeIn = loginTimeIn;
+	}
+
+	public Collection<String> getLoginIPNotIn() {
+		return loginIPNotIn;
+	}
+
+	public void setLoginIPNotIn(Collection<String> loginIPNotIn) {
+		this.loginIPNotIn = loginIPNotIn;
+	}
+
+	public Collection<Date> getLoginTimeNotIn() {
+		return loginTimeNotIn;
+	}
+
+	public void setLoginTimeNotIn(Collection<Date> loginTimeNotIn) {
+		this.loginTimeNotIn = loginTimeNotIn;
+	}
 }

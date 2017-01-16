@@ -299,6 +299,62 @@ public class SqlBuilder {
 		whereSql.append("} and ");
 	}
 
+	private static void dealConditionInOrNot(Object value,
+			StringBuffer whereSql, ConditionMapper conditionMapper,
+			ConditionType type, String tableName, String fieldNamePrefix) {
+		List<?> multiConditionC = (List<?>) value;
+		if (multiConditionC.size() > 0) {
+			StringBuffer tempWhereSql = new StringBuffer();
+			if (tableName != null) {
+				tempWhereSql.append(tableName).append(".");
+			}
+			tempWhereSql.append(conditionMapper.getDbFieldName());
+			switch (type) {
+			case In:
+				break;
+			case NotIn:
+				tempWhereSql.append(" not");
+				break;
+			default:
+				throw new RuntimeException(
+						"Sorry,I refuse to build sql for an ambiguous condition!");
+			}
+			tempWhereSql.append(" in(");
+			int j = -1;
+			boolean allNull = true;
+			for (Object s : multiConditionC) {
+				j++;
+				if (s != null) {
+					if (allNull) {
+						allNull = false;
+					}
+					tempWhereSql.append("#{");
+					if (fieldNamePrefix != null) {
+						tempWhereSql.append(fieldNamePrefix).append(".");
+					}
+					if (conditionMapper.isForeignKey()) {
+						tempWhereSql.append(conditionMapper.getFieldName())
+								.append(".")
+								.append(conditionMapper.getForeignFieldName())
+								.append("[").append(j).append("]");
+					} else {
+						tempWhereSql.append(conditionMapper.getFieldName())
+								.append("[").append(j).append("]");
+					}
+					tempWhereSql.append(",").append("jdbcType=")
+							.append(conditionMapper.getJdbcType().toString())
+							.append("},");
+				}
+			}
+			if (!allNull) {
+				tempWhereSql.delete(tempWhereSql.lastIndexOf(","),
+						tempWhereSql.lastIndexOf(",") + 1);
+				tempWhereSql.append(") and ");
+				whereSql.append(tempWhereSql);
+			}
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	private static void dealConditionMultiLike(Object value,
 			StringBuffer whereSql, ConditionMapper conditionMapper,
@@ -951,6 +1007,14 @@ public class SqlBuilder {
 				dealConditionMultiLike(value, whereSql, conditionMapper,
 						ConditionType.MultiLikeOR, tableName, temp);
 				break;
+			case In:
+				dealConditionInOrNot(value, whereSql, conditionMapper,
+						ConditionType.In, tableName, temp);
+				break;
+			case NotIn:
+				dealConditionInOrNot(value, whereSql, conditionMapper,
+						ConditionType.NotIn, tableName, temp);
+				break;
 			default:
 				break;
 			}
@@ -1064,6 +1128,14 @@ public class SqlBuilder {
 			case MultiLikeOR:
 				dealConditionMultiLike(value, whereSql, conditionMapper,
 						ConditionType.MultiLikeOR, tableName, temp);
+				break;
+			case In:
+				dealConditionInOrNot(value, whereSql, conditionMapper,
+						ConditionType.In, tableName, temp);
+				break;
+			case NotIn:
+				dealConditionInOrNot(value, whereSql, conditionMapper,
+						ConditionType.NotIn, tableName, temp);
 				break;
 			default:
 				break;
