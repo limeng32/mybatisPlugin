@@ -68,30 +68,26 @@ public class ConditionNotInTest {
 	}
 
 	/** 测试有外键情况下condition:notIn功能 */
-//	@Test
+	@Test
 	@IfProfileValue(name = "VOLATILE", value = "true")
 	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "/limeng32/mybatis/mybatisPlugin/test/conditionNotInTest/testConditionIn2.xml")
 	@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/conditionNotInTest/testConditionIn2.xml")
 	public void testConditionNotIn2() {
 		LoginLog_Condition lc = new LoginLog_Condition();
-		List<String> loginIpC = new ArrayList<>();
-		loginIpC.add("11");
-		loginIpC.add("22");
-		lc.setLoginIPIn(loginIpC);
 		Account_Condition ac = new Account_Condition();
 		List<String> nameC = new ArrayList<>();
 		nameC.add("ann");
 		nameC.add("bob");
-		ac.setNameIn(nameC);
+		ac.setNameNotIn(nameC);
 		lc.setAccount(ac);
 		Collection<LoginLog_> c = loginLogService.selectAll(lc);
-		Assert.assertEquals(2, c.size());
+		Assert.assertEquals(0, c.size());
 		int count = loginLogService.count(lc);
-		Assert.assertEquals(2, count);
+		Assert.assertEquals(0, count);
 	}
 
 	/** 测试无外键情况下condition:notIn功能且变量类型为数字的情况 */
-//	@Test
+	@Test
 	@IfProfileValue(name = "VOLATILE", value = "true")
 	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "/limeng32/mybatis/mybatisPlugin/test/conditionNotInTest/testConditionIn3.xml")
 	@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/conditionNotInTest/testConditionIn3.xml")
@@ -100,13 +96,13 @@ public class ConditionNotInTest {
 		List<Integer> opLockC = new ArrayList<>();
 		opLockC.add(1);
 		opLockC.add(2);
-		ac.setOpLockIn(opLockC);
+		ac.setOpLockNotIn(opLockC);
 		int count = accountService.count(ac);
-		Assert.assertEquals(2, count);
+		Assert.assertEquals(0, count);
 	}
 
 	/** 测试无外键情况下condition:notIn功能且变量类型为时间的情况 */
-//	@Test
+	@Test
 	@IfProfileValue(name = "VOLATILE", value = "true")
 	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "/limeng32/mybatis/mybatisPlugin/test/conditionNotInTest/testConditionIn4.xml")
 	@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/conditionNotInTest/testConditionIn4.xml")
@@ -115,8 +111,8 @@ public class ConditionNotInTest {
 		List<Date> timeC = new ArrayList<>();
 		timeC.add(new Date(0));
 		timeC.add(new Date(1000));
-		lc.setLoginTimeIn(timeC);
+		lc.setLoginTimeNotIn(timeC);
 		int count = loginLogService.count(lc);
-		Assert.assertEquals(2, count);
+		Assert.assertEquals(0, count);
 	}
 }
