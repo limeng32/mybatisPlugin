@@ -8,12 +8,15 @@ public class Page<T> {
 
 	private int maxPageNum;
 
+	private int totalCount;
+
 	private Collection<T> pageItems;
 
 	public Page(Collection<T> items, Limitable limitable) {
 		pageItems = items;
 		pageNo = limitable.getPageNo();
 		maxPageNum = limitable.getMaxPageNum();
+		totalCount = limitable.getTotalCount();
 	}
 
 	public int getPageNo() {
@@ -30,6 +33,14 @@ public class Page<T> {
 
 	public void setMaxPageNum(int maxPageNum) {
 		this.maxPageNum = maxPageNum;
+	}
+
+	public int getTotalCount() {
+		return totalCount;
+	}
+
+	public void setTotalCount(int totalCount) {
+		this.totalCount = totalCount;
 	}
 
 	public Collection<T> getPageItems() {
