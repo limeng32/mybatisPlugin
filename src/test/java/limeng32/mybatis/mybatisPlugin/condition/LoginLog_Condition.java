@@ -11,7 +11,7 @@ import limeng32.mybatis.mybatisPlugin.mapperPlugin.annotation.ConditionMapperAnn
 import limeng32.mybatis.mybatisPlugin.mapperPlugin.annotation.ConditionType;
 import limeng32.mybatis.mybatisPlugin.mapperPlugin.annotation.QueryMapperAnnotation;
 
-@QueryMapperAnnotation(tableName = "loginLog_")
+@QueryMapperAnnotation(tableName = "LOGINLOG_")
 public class LoginLog_Condition extends LoginLog_ implements Conditionable {
 
 	private static final long serialVersionUID = 1L;
@@ -29,7 +29,7 @@ public class LoginLog_Condition extends LoginLog_ implements Conditionable {
 	@ConditionMapperAnnotation(dbFieldName = "loginTime", conditionType = ConditionType.NotEqual)
 	private Date loginTimeNotEqual;
 
-	@ConditionMapperAnnotation(dbFieldName = "id", conditionType = ConditionType.GreaterThan)
+	@ConditionMapperAnnotation(dbFieldName = "ID", conditionType = ConditionType.GreaterThan)
 	private Integer idGreaterThan;
 
 	@ConditionMapperAnnotation(dbFieldName = "id", conditionType = ConditionType.GreaterOrEqual)
@@ -41,16 +41,16 @@ public class LoginLog_Condition extends LoginLog_ implements Conditionable {
 	@ConditionMapperAnnotation(dbFieldName = "id", conditionType = ConditionType.LessOrEqual)
 	private Integer idLessOrEqual;
 
-	@ConditionMapperAnnotation(dbFieldName = "id", conditionType = ConditionType.NotEqual)
+	@ConditionMapperAnnotation(dbFieldName = "ID", conditionType = ConditionType.NotEqual)
 	private Integer idNotEqual;
 
 	@ConditionMapperAnnotation(dbFieldName = "loginIP", conditionType = ConditionType.In)
 	private Collection<String> loginIPIn;
 
-	@ConditionMapperAnnotation(dbFieldName = "loginTime", conditionType = ConditionType.In)
+	@ConditionMapperAnnotation(dbFieldName = "lOginTime", conditionType = ConditionType.In)
 	private Collection<Date> loginTimeIn;
 
-	@ConditionMapperAnnotation(dbFieldName = "loginIP", conditionType = ConditionType.NotIn)
+	@ConditionMapperAnnotation(dbFieldName = "logINIP", conditionType = ConditionType.NotIn)
 	private Collection<String> loginIPNotIn;
 
 	@ConditionMapperAnnotation(dbFieldName = "loginTime", conditionType = ConditionType.NotIn)

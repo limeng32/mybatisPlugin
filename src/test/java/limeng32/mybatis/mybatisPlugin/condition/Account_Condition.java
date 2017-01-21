@@ -12,7 +12,7 @@ import limeng32.mybatis.mybatisPlugin.mapperPlugin.annotation.ConditionMapperAnn
 import limeng32.mybatis.mybatisPlugin.mapperPlugin.annotation.ConditionType;
 import limeng32.mybatis.mybatisPlugin.mapperPlugin.annotation.QueryMapperAnnotation;
 
-@QueryMapperAnnotation(tableName = "account_")
+@QueryMapperAnnotation(tableName = "Account_")
 public class Account_Condition extends Account_ implements Conditionable {
 
 	private static final long serialVersionUID = 1L;
@@ -59,7 +59,7 @@ public class Account_Condition extends Account_ implements Conditionable {
 
 	private Sortable sorter;
 
-	@ConditionMapperAnnotation(dbFieldName = field_email, conditionType = ConditionType.Like)
+	@ConditionMapperAnnotation(dbFieldName = "Email", conditionType = ConditionType.Like)
 	private String emailLike;
 
 	@ConditionMapperAnnotation(dbFieldName = field_email, conditionType = ConditionType.HeadLike)

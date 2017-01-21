@@ -8,21 +8,21 @@ import limeng32.mybatis.mybatisPlugin.mapperPlugin.annotation.TableMapperAnnotat
 
 import org.apache.ibatis.type.JdbcType;
 
-@TableMapperAnnotation(tableName = "loginLog_")
+@TableMapperAnnotation(tableName = "LoginLog_")
 public class LoginLog_ extends PojoSupport<LoginLog_> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@FieldMapperAnnotation(dbFieldName = "id", jdbcType = JdbcType.INTEGER, isUniqueKey = true)
+	@FieldMapperAnnotation(dbFieldName = "iD", jdbcType = JdbcType.INTEGER, isUniqueKey = true)
 	private Integer id;
 
 	@FieldMapperAnnotation(dbFieldName = "loginTime", jdbcType = JdbcType.TIMESTAMP)
 	private java.util.Date loginTime;
 
-	@FieldMapperAnnotation(dbFieldName = "loginIP", jdbcType = JdbcType.VARCHAR)
+	@FieldMapperAnnotation(dbFieldName = "logiNIP", jdbcType = JdbcType.VARCHAR)
 	private java.lang.String loginIP;
 
-	@FieldMapperAnnotation(dbFieldName = "accountid", jdbcType = JdbcType.INTEGER, dbAssociationUniqueKey = "id")
+	@FieldMapperAnnotation(dbFieldName = "accountId", jdbcType = JdbcType.INTEGER, dbAssociationUniqueKey = "ID")
 	private Account_ account;
 
 	private java.util.Collection<Detail_> detail;

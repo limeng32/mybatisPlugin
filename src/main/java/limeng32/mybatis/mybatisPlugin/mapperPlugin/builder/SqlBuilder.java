@@ -132,7 +132,7 @@ public class SqlBuilder {
 	private static Mapperable getFieldMapperByDbFieldName(
 			Map<String, FieldMapper> newFieldMapperCache, String dbFieldName) {
 		for (Mapperable mapper : newFieldMapperCache.values()) {
-			if (dbFieldName.equals(mapper.getDbFieldName())) {
+			if (dbFieldName.equalsIgnoreCase(mapper.getDbFieldName())) {
 				return mapper;
 			}
 		}
@@ -182,7 +182,7 @@ public class SqlBuilder {
 								.getDeclaredAnnotations()) {
 							if (oan instanceof FieldMapperAnnotation
 									&& ((FieldMapperAnnotation) oan)
-											.dbFieldName().equals(
+											.dbFieldName().equalsIgnoreCase(
 													conditionMapperAnnotation
 															.dbFieldName())) {
 								FieldMapperAnnotation fieldMapperAnnotation = (FieldMapperAnnotation) oan;
