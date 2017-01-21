@@ -90,6 +90,8 @@ public class SqlBuilder {
 					default:
 						break;
 					}
+					fieldMapper.setIgnoredSelect(fieldMapperAnnotation
+							.ignoredSelect());
 					if (fieldMapperAnnotation.isUniqueKey()) {
 						uniqueKeyList.add(fieldMapper);
 					}
@@ -768,7 +770,9 @@ public class SqlBuilder {
 
 		for (Mapperable fieldMapper : tableMapper.getFieldMapperCache()
 				.values()) {
-			selectSql.append(fieldMapper.getDbFieldName()).append(",");
+			if (!fieldMapper.isIgnoredSelect()) {
+				selectSql.append(fieldMapper.getDbFieldName()).append(",");
+			}
 		}
 
 		if (selectSql.indexOf(",") > -1) {
@@ -914,8 +918,10 @@ public class SqlBuilder {
 			fromSql.append(tableName);
 			for (Mapperable fieldMapper : tableMapper.getFieldMapperCache()
 					.values()) {
-				selectSql.append(tableName).append(".")
-						.append(fieldMapper.getDbFieldName()).append(",");
+				if (!fieldMapper.isIgnoredSelect()) {
+					selectSql.append(tableName).append(".")
+							.append(fieldMapper.getDbFieldName()).append(",");
+				}
 			}
 		}
 		/*

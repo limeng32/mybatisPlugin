@@ -49,6 +49,11 @@ public class FieldMapper implements Mapperable {
 	 */
 	private boolean isOpVersionLock;
 
+	/**
+	 * 此变量在查询结果集中是否被忽略。默认为否。
+	 */
+	private boolean ignoredSelect;
+
 	@Override
 	public String getDbFieldName() {
 		return dbFieldName;
@@ -119,4 +124,12 @@ public class FieldMapper implements Mapperable {
 		this.isOpVersionLock = isOpVersionLock;
 	}
 
+	@Override
+	public boolean isIgnoredSelect() {
+		return ignoredSelect;
+	}
+
+	public void setIgnoredSelect(boolean ignoredSelect) {
+		this.ignoredSelect = ignoredSelect;
+	}
 }

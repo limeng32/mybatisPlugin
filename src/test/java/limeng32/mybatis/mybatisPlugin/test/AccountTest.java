@@ -4,6 +4,8 @@ import java.util.Collection;
 
 import limeng32.mybatis.mybatisPlugin.AccountService;
 import limeng32.mybatis.mybatisPlugin.Account_;
+import limeng32.mybatis.mybatisPlugin.LoginLogService;
+import limeng32.mybatis.mybatisPlugin.LoginLog_;
 import limeng32.mybatis.mybatisPlugin.StoryStatus_;
 import limeng32.mybatis.mybatisPlugin.cachePlugin.Conditionable;
 import limeng32.mybatis.mybatisPlugin.cachePlugin.Order;
@@ -45,6 +47,9 @@ public class AccountTest {
 
 	@Autowired
 	private AccountService accountService;
+
+	@Autowired
+	private LoginLogService loginLogService;
 
 	@Test
 	@IfProfileValue(name = "VOLATILE", value = "true")
@@ -106,15 +111,12 @@ public class AccountTest {
 		Collection<Account_> c = accountService.selectAll(ac);
 		Account_[] accounts = c.toArray(new Account_[c.size()]);
 		Assert.assertEquals("ann", accounts[3].getName());
-		Assert.assertEquals("5a690d842935c51f26f473e025c1b97a",
-				accounts[0].getPassword());
 		ac.setSorter(new SortParam(new Order(Account_Condition.field_name,
 				Conditionable.Sequence.desc), new Order(
 				Account_Condition.field_password, Conditionable.Sequence.desc)));
 		c = accountService.selectAll(ac);
 		accounts = c.toArray(new Account_[c.size()]);
-		Assert.assertEquals("6a690d842935c51f26f473e025c1b97a",
-				accounts[0].getPassword());
+		Assert.assertEquals(new Integer(4), accounts[0].getId());
 		ac.setSorter(new SortParam(new Order(Account_Condition.field_name,
 				Conditionable.Sequence.desc), new Order(
 				Account_Condition.field_name, Conditionable.Sequence.asc)));
@@ -165,8 +167,42 @@ public class AccountTest {
 		accountService.update(a2);
 		Account_ a3 = accountService.select(3);
 		Assert.assertNull(a3.getStatus());
+		a3.setPassword("5a690d842935c51f26f473e025c1b97a");
 		accountService.updatePersistent(a3);
 		Account_ a4 = accountService.select(3);
 		Assert.assertNull(a4.getStatus());
+	}
+
+	/** 测试ignoredSelect功能 */
+	@Test
+	@IfProfileValue(name = "VOLATILE", value = "true")
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "/limeng32/mybatis/mybatisPlugin/test/accountTest/testIgnoredSelect.xml")
+	@ExpectedDatabase(assertionMode = DatabaseAssertionMode.NON_STRICT, value = "/limeng32/mybatis/mybatisPlugin/test/accountTest/testIgnoredSelect.result.xml")
+	@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/accountTest/testIgnoredSelect.xml")
+	public void testIgnoredSelect() {
+		Account_ account = accountService.select(1);
+		Assert.assertNull(account.getPassword());
+
+		Account_ ac = new Account_();
+		Collection<Account_> accountC = accountService.selectAll(ac);
+		for (Account_ a : accountC) {
+			Assert.assertNull(a.getPassword());
+		}
+
+		Account_ ac2 = new Account_();
+		ac2.setPassword("5a690d842935c51f26f473e025c1b97a");
+		Collection<Account_> accountC2 = accountService.selectAll(ac2);
+		Assert.assertEquals(1, accountC2.size());
+
+		LoginLog_ loginLog = loginLogService.select(1);
+		Assert.assertNull(loginLog.getAccount().getPassword());
+
+		LoginLog_ lc2 = new LoginLog_();
+		lc2.setAccount(ac2);
+		Collection<LoginLog_> loginLogC = loginLogService.selectAll(lc2);
+		Assert.assertEquals(1, loginLogC.size());
+		for (LoginLog_ l : loginLogC) {
+			Assert.assertEquals("0.0.0.1", l.getLoginIP());
+		}
 	}
 }

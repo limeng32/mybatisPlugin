@@ -25,7 +25,7 @@ public class Account_ extends PojoSupport<Account_> implements Serializable {
 	@FieldMapperAnnotation(dbFieldName = "email", jdbcType = JdbcType.VARCHAR)
 	private java.lang.String email;
 
-	@FieldMapperAnnotation(dbFieldName = "password", jdbcType = JdbcType.VARCHAR)
+	@FieldMapperAnnotation(dbFieldName = "password", jdbcType = JdbcType.VARCHAR, ignoredSelect = true)
 	private java.lang.String password;
 
 	@FieldMapperAnnotation(dbFieldName = "opLock", jdbcType = JdbcType.INTEGER, opLockType = OpLockType.Version)

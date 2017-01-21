@@ -16,4 +16,5 @@ public interface Mapperable {
 
 	String getDbAssociationUniqueKey();
 
+	boolean isIgnoredSelect();
 }

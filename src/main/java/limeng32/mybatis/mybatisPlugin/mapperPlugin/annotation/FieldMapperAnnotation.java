@@ -48,4 +48,10 @@ public @interface FieldMapperAnnotation {
 	 * ,Timestamp,Time
 	 */
 	JdbcType jdbcType();
+
+	/**
+	 * 
+	 * 是否在select时忽略。默认为false。
+	 */
+	boolean ignoredSelect() default false;
 }

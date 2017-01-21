@@ -45,6 +45,11 @@ public class ConditionMapper implements Mapperable {
 	 */
 	private String foreignFieldName;
 
+	/**
+	 * 此变量在查询结果集中是否被忽略。默认为否。
+	 */
+	private boolean ignoredSelect;
+
 	@Override
 	public String getFieldName() {
 		return fieldName;
@@ -105,6 +110,15 @@ public class ConditionMapper implements Mapperable {
 
 	public void setConditionType(ConditionType conditionType) {
 		this.conditionType = conditionType;
+	}
+
+	@Override
+	public boolean isIgnoredSelect() {
+		return ignoredSelect;
+	}
+
+	public void setIgnoredSelect(boolean ignoredSelect) {
+		this.ignoredSelect = ignoredSelect;
 	}
 
 }
