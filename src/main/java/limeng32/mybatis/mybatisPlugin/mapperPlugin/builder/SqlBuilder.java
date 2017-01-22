@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import limeng32.mybatis.mybatisPlugin.mapperPlugin.annotation.ConditionMapper;
 import limeng32.mybatis.mybatisPlugin.mapperPlugin.annotation.ConditionMapperAnnotation;
@@ -267,11 +268,9 @@ public class SqlBuilder {
 
 	private static void dealConditionLike(StringBuffer whereSql,
 			ConditionMapper conditionMapper, ConditionType type,
-			String tableName, String fieldNamePrefix) {
-		if (tableName != null) {
-			whereSql.append(tableName).append(".");
-		}
-		whereSql.append(conditionMapper.getDbFieldName()).append(" like #{");
+			TableName tableName, String fieldNamePrefix) {
+		handleWhereSql(whereSql, conditionMapper, tableName, fieldNamePrefix);
+		whereSql.append(" like #{");
 		if (fieldNamePrefix != null) {
 			whereSql.append(fieldNamePrefix).append(".");
 		}
@@ -303,14 +302,12 @@ public class SqlBuilder {
 
 	private static void dealConditionInOrNot(Object value,
 			StringBuffer whereSql, ConditionMapper conditionMapper,
-			ConditionType type, String tableName, String fieldNamePrefix) {
+			ConditionType type, TableName tableName, String fieldNamePrefix) {
 		List<?> multiConditionC = (List<?>) value;
 		if (multiConditionC.size() > 0) {
 			StringBuffer tempWhereSql = new StringBuffer();
-			if (tableName != null) {
-				tempWhereSql.append(tableName).append(".");
-			}
-			tempWhereSql.append(conditionMapper.getDbFieldName());
+			handleWhereSql(tempWhereSql, conditionMapper, tableName,
+					fieldNamePrefix);
 			switch (type) {
 			case In:
 				break;
@@ -360,7 +357,7 @@ public class SqlBuilder {
 	@SuppressWarnings("unchecked")
 	private static void dealConditionMultiLike(Object value,
 			StringBuffer whereSql, ConditionMapper conditionMapper,
-			ConditionType type, String tableName, String fieldNamePrefix) {
+			ConditionType type, TableName tableName, String fieldNamePrefix) {
 		List<String> multiConditionList = (List<String>) value;
 		if (multiConditionList.size() > 0) {
 			StringBuffer tempWhereSql = new StringBuffer();
@@ -373,11 +370,9 @@ public class SqlBuilder {
 					if (allNull) {
 						allNull = false;
 					}
-					if (tableName != null) {
-						tempWhereSql.append(tableName).append(".");
-					}
-					tempWhereSql.append(conditionMapper.getDbFieldName())
-							.append(" like #{");
+					handleWhereSql(tempWhereSql, conditionMapper, tableName,
+							fieldNamePrefix);
+					tempWhereSql.append(" like #{");
 					if (fieldNamePrefix != null) {
 						tempWhereSql.append(fieldNamePrefix).append(".");
 					}
@@ -427,12 +422,10 @@ public class SqlBuilder {
 	}
 
 	private static void dealConditionEqual(Object object,
-			StringBuffer whereSql, Mapperable mapper, String tableName,
+			StringBuffer whereSql, Mapperable mapper, TableName tableName,
 			String fieldNamePrefix) {
-		if (tableName != null) {
-			whereSql.append(tableName).append(".");
-		}
-		whereSql.append(mapper.getDbFieldName()).append(" = #{");
+		handleWhereSql(whereSql, mapper, tableName, fieldNamePrefix);
+		whereSql.append(" = #{");
 		if (fieldNamePrefix != null) {
 			whereSql.append(fieldNamePrefix).append(".");
 		}
@@ -450,12 +443,9 @@ public class SqlBuilder {
 	}
 
 	private static void dealConditionNotEqual(StringBuffer whereSql,
-			Mapperable mapper, ConditionType type, String tableName,
+			Mapperable mapper, ConditionType type, TableName tableName,
 			String fieldNamePrefix) {
-		if (tableName != null) {
-			whereSql.append(tableName).append(".");
-		}
-		whereSql.append(mapper.getDbFieldName());
+		handleWhereSql(whereSql, mapper, tableName, fieldNamePrefix);
 		switch (type) {
 		case GreaterThan:
 			whereSql.append(" > ");
@@ -491,6 +481,15 @@ public class SqlBuilder {
 					.append(mapper.getJdbcType().toString());
 		}
 		whereSql.append("} and ");
+	}
+
+	private static void handleWhereSql(StringBuffer whereSql,
+			Mapperable mapper, TableName tableName, String fieldNamePrefix) {
+		if (tableName != null) {
+			whereSql.append(tableName.sqlWhere());
+			// whereSql.append(tableName).append(".");
+		}
+		whereSql.append(mapper.getDbFieldName());
 	}
 
 	/**
@@ -810,9 +809,9 @@ public class SqlBuilder {
 		StringBuffer selectSql = new StringBuffer("select ");
 		StringBuffer fromSql = new StringBuffer(" from ");
 		StringBuffer whereSql = new StringBuffer(" where ");
-
+		AtomicInteger ai = new AtomicInteger(0);
 		dealMapperAnnotationIterationForSelectAll(object, selectSql, fromSql,
-				whereSql, null, null, null);
+				whereSql, null, null, null, ai);
 
 		if (selectSql.indexOf(",") > -1) {
 			selectSql.delete(selectSql.lastIndexOf(","),
@@ -842,11 +841,13 @@ public class SqlBuilder {
 
 		TableMapper tableMapper = buildTableMapper(getTableMappedClass(object
 				.getClass()));
-		String tableName = ((TableMapperAnnotation) tableMapper
-				.getTableMapperAnnotation()).tableName();
+		AtomicInteger ai = new AtomicInteger(0);
+		TableName tableName = new TableName(
+				((TableMapperAnnotation) tableMapper.getTableMapperAnnotation())
+						.tableName(), 0);
 
 		StringBuffer selectSql = new StringBuffer();
-		selectSql.append("select count(").append(tableName).append(".");
+		selectSql.append("select count(").append(tableName.sqlWhere());
 		/*
 		 * 如果有且只有一个主键，采用select count("主键")的方式；如果无主键或有多个主键（联合主键），采用select
 		 * count(*)的方式。
@@ -863,7 +864,7 @@ public class SqlBuilder {
 		StringBuffer whereSql = new StringBuffer(" where ");
 
 		dealMapperAnnotationIterationForCount(object, fromSql, whereSql, null,
-				null, null);
+				null, null, ai);
 
 		if (selectSql.indexOf(",") > -1) {
 			selectSql.delete(selectSql.lastIndexOf(","),
@@ -901,25 +902,29 @@ public class SqlBuilder {
 
 	private static void dealMapperAnnotationIterationForSelectAll(
 			Object object, StringBuffer selectSql, StringBuffer fromSql,
-			StringBuffer whereSql, String originTableName,
-			Mapperable originFieldMapper, String fieldPerfix) throws Exception {
+			StringBuffer whereSql, TableName originTableName,
+			Mapperable originFieldMapper, String fieldPerfix,
+			AtomicInteger index) throws Exception {
 		Map<?, ?> dtoFieldMap = PropertyUtils.describe(object);
 		TableMapper tableMapper = buildTableMapper(getTableMappedClass(object
 				.getClass()));
 		QueryMapper queryMapper = buildQueryMapper(object.getClass(),
 				getTableMappedClass(object.getClass()));
-		String tableName = ((TableMapperAnnotation) tableMapper
-				.getTableMapperAnnotation()).tableName();
+		// String tableName = ((TableMapperAnnotation) tableMapper
+		// .getTableMapperAnnotation()).tableName();
+		TableName tableName = new TableName(
+				((TableMapperAnnotation) tableMapper.getTableMapperAnnotation())
+						.tableName(), index.getAndIncrement());
 
 		/*
 		 * 在第一次遍历中，处理好selectSql和fromSql。 如果originFieldMapper为null则可认为是第一次遍历
 		 */
 		if (originFieldMapper == null) {
-			fromSql.append(tableName);
+			fromSql.append(tableName.sqlSelect());
 			for (Mapperable fieldMapper : tableMapper.getFieldMapperCache()
 					.values()) {
 				if (!fieldMapper.isIgnoredSelect()) {
-					selectSql.append(tableName).append(".")
+					selectSql.append(tableName.sqlWhere())
 							.append(fieldMapper.getDbFieldName()).append(",");
 				}
 			}
@@ -936,10 +941,10 @@ public class SqlBuilder {
 				temp = fieldPerfix + "." + temp;
 			}
 			/* 处理fromSql */
-			fromSql.append(" left join ").append(tableName).append(" on ")
-					.append(originTableName).append(".")
+			fromSql.append(" left join ").append(tableName.sqlSelect())
+					.append(" on ").append(originTableName.sqlWhere())
 					.append(originFieldMapper.getDbFieldName()).append(" = ")
-					.append(tableName).append(".")
+					.append(tableName.sqlWhere())
 					.append(originFieldMapper.getDbAssociationUniqueKey());
 		}
 
@@ -954,7 +959,7 @@ public class SqlBuilder {
 			if (hasTableMapperAnnotation(value.getClass())
 					|| hasQueryMapperAnnotation(value.getClass())) {
 				dealMapperAnnotationIterationForSelectAll(value, selectSql,
-						fromSql, whereSql, tableName, fieldMapper, temp);
+						fromSql, whereSql, tableName, fieldMapper, temp, index);
 			} else {
 				dealConditionEqual(value, whereSql, fieldMapper, tableName,
 						temp);
@@ -1029,21 +1034,22 @@ public class SqlBuilder {
 
 	private static void dealMapperAnnotationIterationForCount(Object object,
 			StringBuffer fromSql, StringBuffer whereSql,
-			String originTableName, Mapperable originFieldMapper,
-			String fieldPerfix) throws Exception {
+			TableName originTableName, Mapperable originFieldMapper,
+			String fieldPerfix, AtomicInteger index) throws Exception {
 		Map<?, ?> dtoFieldMap = PropertyUtils.describe(object);
 		TableMapper tableMapper = buildTableMapper(getTableMappedClass(object
 				.getClass()));
 		QueryMapper queryMapper = buildQueryMapper(object.getClass(),
 				getTableMappedClass(object.getClass()));
-		String tableName = ((TableMapperAnnotation) tableMapper
-				.getTableMapperAnnotation()).tableName();
+		TableName tableName = new TableName(
+				((TableMapperAnnotation) tableMapper.getTableMapperAnnotation())
+						.tableName(), index.getAndIncrement());
 
 		/*
 		 * 在第一次遍历中，处理好fromSql。 如果originFieldMapper为null则可认为是第一次遍历
 		 */
 		if (originFieldMapper == null) {
-			fromSql.append(tableName);
+			fromSql.append(tableName.sqlSelect());
 		}
 
 		/*
@@ -1058,10 +1064,10 @@ public class SqlBuilder {
 				temp = fieldPerfix + "." + temp;
 			}
 			/* 处理fromSql */
-			fromSql.append(" left join ").append(tableName).append(" on ")
-					.append(originTableName).append(".")
+			fromSql.append(" left join ").append(tableName.sqlSelect())
+					.append(" on ").append(originTableName.sqlWhere())
 					.append(originFieldMapper.getDbFieldName()).append(" = ")
-					.append(tableName).append(".")
+					.append(tableName.sqlWhere())
 					.append(originFieldMapper.getDbAssociationUniqueKey());
 		}
 
@@ -1076,7 +1082,7 @@ public class SqlBuilder {
 			if (hasTableMapperAnnotation(value.getClass())
 					|| hasQueryMapperAnnotation(value.getClass())) {
 				dealMapperAnnotationIterationForCount(value, fromSql, whereSql,
-						tableName, fieldMapper, temp);
+						tableName, fieldMapper, temp, index);
 			} else {
 				dealConditionEqual(value, whereSql, fieldMapper, tableName,
 						temp);

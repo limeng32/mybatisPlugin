@@ -6,6 +6,7 @@ import limeng32.mybatis.mybatisPlugin.AccountService;
 import limeng32.mybatis.mybatisPlugin.Account_;
 import limeng32.mybatis.mybatisPlugin.LoginLogService;
 import limeng32.mybatis.mybatisPlugin.LoginLog_;
+import limeng32.mybatis.mybatisPlugin.Role_;
 import limeng32.mybatis.mybatisPlugin.StoryStatus_;
 import limeng32.mybatis.mybatisPlugin.cachePlugin.Conditionable;
 import limeng32.mybatis.mybatisPlugin.cachePlugin.Order;
@@ -204,5 +205,30 @@ public class AccountTest {
 		for (LoginLog_ l : loginLogC) {
 			Assert.assertEquals("0.0.0.1", l.getLoginIP());
 		}
+	}
+
+	/** 测试deputyRole */
+	@Test
+	@IfProfileValue(name = "VOLATILE", value = "true")
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "/limeng32/mybatis/mybatisPlugin/test/accountTest/testDeputy.xml")
+	@ExpectedDatabase(assertionMode = DatabaseAssertionMode.NON_STRICT, value = "/limeng32/mybatis/mybatisPlugin/test/accountTest/testDeputy.result.xml")
+	@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/accountTest/testDeputy.xml")
+	public void testDeputy() {
+		Account_ account = accountService.select(1);
+		Assert.assertEquals("role1", account.getRole().getName());
+		Assert.assertEquals("role2", account.getRoleDeputy().getName());
+
+		Role_ rc = new Role_();
+		rc.setName("role1");
+		Role_ rdc = new Role_();
+		rdc.setName("role2");
+		Account_ ac = new Account_();
+		ac.setRole(rc);
+		ac.setRoleDeputy(rdc);
+		Collection<Account_> accountC = accountService.selectAll(ac);
+		Assert.assertEquals(1, accountC.size());
+
+		int count = accountService.count(ac);
+		Assert.assertEquals(1, count);
 	}
 }

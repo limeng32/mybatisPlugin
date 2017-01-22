@@ -44,4 +44,6 @@ public interface RoleMapper extends MapperFace<Role_> {
 	public int count(Role_ t);
 
 	public void loadAccount(Role_ role, Account_ account);
+
+	public void loadAccountDeputy(Role_ roleDeputy, Account_ accountDeputy);
 }

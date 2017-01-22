@@ -51,6 +51,9 @@ public class Account_ extends PojoSupport<Account_> implements Serializable {
 	@FieldMapperAnnotation(dbFieldName = "role_id", jdbcType = JdbcType.INTEGER, dbAssociationUniqueKey = "id")
 	private Role_ role;
 
+	@FieldMapperAnnotation(dbFieldName = "deputy_id", jdbcType = JdbcType.INTEGER, dbAssociationUniqueKey = "id")
+	private Role_ roleDeputy;
+
 	private java.util.Collection<LoginLog_> loginLog;
 
 	public Integer getId() {
@@ -179,6 +182,24 @@ public class Account_ extends PojoSupport<Account_> implements Serializable {
 			if (newRole != null) {
 				this.role = newRole;
 				this.role.addAccount(this);
+			}
+		}
+	}
+
+	public Role_ getRoleDeputy() {
+		return roleDeputy;
+	}
+
+	public void setRoleDeputy(Role_ newRoleDeputy) {
+		if (this.roleDeputy == null || !this.roleDeputy.equals(newRoleDeputy)) {
+			if (this.roleDeputy != null) {
+				Role_ oldRoleDeputy = this.roleDeputy;
+				this.roleDeputy = null;
+				oldRoleDeputy.removeAccountDeputy(this);
+			}
+			if (newRoleDeputy != null) {
+				this.roleDeputy = newRoleDeputy;
+				this.roleDeputy.addAccountDeputy(this);
 			}
 		}
 	}

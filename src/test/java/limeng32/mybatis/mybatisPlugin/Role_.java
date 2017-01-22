@@ -21,6 +21,8 @@ public class Role_ extends PojoSupport<Role_> implements Serializable {
 
 	private java.util.Collection<Account_> account;
 
+	private java.util.Collection<Account_> accountDeputy;
+
 	@Override
 	public boolean equalsExactly(Object arg0) {
 		return false;
@@ -91,6 +93,58 @@ public class Role_ extends PojoSupport<Role_> implements Serializable {
 				oldAccount = (Account_) iter.next();
 				iter.remove();
 				oldAccount.setRole((Role_) null);
+			}
+		}
+	}
+
+	public java.util.Collection<Account_> getAccountDeputy() {
+		if (accountDeputy == null)
+			accountDeputy = new java.util.LinkedHashSet<Account_>();
+		return accountDeputy;
+	}
+
+	public java.util.Iterator<Account_> getIteratorAccountDeputy() {
+		if (accountDeputy == null)
+			accountDeputy = new java.util.LinkedHashSet<Account_>();
+		return accountDeputy.iterator();
+	}
+
+	public void setAccountDeputy(java.util.Collection<Account_> newAccountDeputy) {
+		removeAllAccountDeputy();
+		for (java.util.Iterator<Account_> iter = newAccountDeputy.iterator(); iter
+				.hasNext();)
+			addAccountDeputy((Account_) iter.next());
+	}
+
+	public void addAccountDeputy(Account_ newAccountDeputy) {
+		if (newAccountDeputy == null)
+			return;
+		if (this.accountDeputy == null)
+			this.accountDeputy = new java.util.LinkedHashSet<Account_>();
+		if (!this.accountDeputy.contains(newAccountDeputy)) {
+			this.accountDeputy.add(newAccountDeputy);
+			newAccountDeputy.setRoleDeputy(this);
+		}
+	}
+
+	public void removeAccountDeputy(Account_ oldAccountDeputy) {
+		if (oldAccountDeputy == null)
+			return;
+		if (this.accountDeputy != null)
+			if (this.accountDeputy.contains(oldAccountDeputy)) {
+				this.accountDeputy.remove(oldAccountDeputy);
+				oldAccountDeputy.setRoleDeputy((Role_) null);
+			}
+	}
+
+	public void removeAllAccountDeputy() {
+		if (accountDeputy != null) {
+			Account_ oldAccountDeputy;
+			for (java.util.Iterator<Account_> iter = getIteratorAccountDeputy(); iter
+					.hasNext();) {
+				oldAccountDeputy = (Account_) iter.next();
+				iter.remove();
+				oldAccountDeputy.setRoleDeputy((Role_) null);
 			}
 		}
 	}

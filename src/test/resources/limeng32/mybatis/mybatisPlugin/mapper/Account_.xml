@@ -26,5 +26,8 @@
 		<association property="role" javaType="Role_"
 			select="limeng32.mybatis.mybatisPlugin.mapper.RoleMapper.select"
 			column="role_id" />
+		<association property="roleDeputy" javaType="Role_"
+			select="limeng32.mybatis.mybatisPlugin.mapper.RoleMapper.select"
+			column="deputy_id" />
 	</resultMap>
 </mapper>

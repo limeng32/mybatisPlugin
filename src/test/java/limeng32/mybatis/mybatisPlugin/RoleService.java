@@ -67,4 +67,10 @@ public class RoleService extends ServiceSupport<Role_> implements RoleMapper {
 		account.setRole(role);
 		role.setAccount(accountService.selectAll(account));
 	}
+
+	@Override
+	public void loadAccountDeputy(Role_ roleDeputy, Account_ accountDeputy) {
+		accountDeputy.setRoleDeputy(roleDeputy);
+		roleDeputy.setAccountDeputy(accountService.selectAll(accountDeputy));
+	}
 }
