@@ -96,7 +96,7 @@ public class AutoMapperInterceptor implements Interceptor {
 				newSql = SqlBuilder.buildUpdatePersistentSql(parameterObject);
 				break;
 			}
-			logger.debug("Auto generated sql:" + newSql);
+			logger.warn("Auto generated sql:" + newSql);
 			SqlSource sqlSource = buildSqlSource(configuration, newSql,
 					parameterObject.getClass());
 			List<ParameterMapping> parameterMappings = sqlSource.getBoundSql(

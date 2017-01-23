@@ -231,4 +231,44 @@ public class AccountTest {
 		int count = accountService.count(ac);
 		Assert.assertEquals(1, count);
 	}
+
+	/** 更多的测试deputyRole */
+	@Test
+	@IfProfileValue(name = "VOLATILE", value = "true")
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "/limeng32/mybatis/mybatisPlugin/test/accountTest/testDeputy2.xml")
+	@ExpectedDatabase(assertionMode = DatabaseAssertionMode.NON_STRICT, value = "/limeng32/mybatis/mybatisPlugin/test/accountTest/testDeputy2.result.xml")
+	@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/accountTest/testDeputy2.xml")
+	public void testDeputy2() {
+		Role_ rc = new Role_();
+		rc.setName("role1");
+		Role_ rdc = new Role_();
+		rdc.setName("role2");
+		Account_ ac = new Account_();
+		ac.setRole(rc);
+		ac.setRoleDeputy(rdc);
+		Collection<Account_> accountC = accountService.selectAll(ac);
+		Assert.assertEquals(1, accountC.size());
+		int count = accountService.count(ac);
+		Assert.assertEquals(1, count);
+
+		Account_ ac2 = new Account_();
+		ac2.setRole(rc);
+		Collection<Account_> accountC2 = accountService.selectAll(ac2);
+		Assert.assertEquals(2, accountC2.size());
+		int count2 = accountService.count(ac2);
+		Assert.assertEquals(2, count2);
+
+		Account_ ac3 = new Account_();
+		ac3.setRoleDeputy(rdc);
+		Collection<Account_> accountC3 = accountService.selectAll(ac3);
+		Assert.assertEquals(2, accountC3.size());
+		int count3 = accountService.count(ac3);
+		Assert.assertEquals(2, count3);
+
+		Account_ ac4 = new Account_();
+		Collection<Account_> accountC4 = accountService.selectAll(ac4);
+		Assert.assertEquals(4, accountC4.size());
+		int count4 = accountService.count(ac4);
+		Assert.assertEquals(4, count4);
+	}
 }
