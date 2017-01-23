@@ -487,7 +487,6 @@ public class SqlBuilder {
 			Mapperable mapper, TableName tableName, String fieldNamePrefix) {
 		if (tableName != null) {
 			whereSql.append(tableName.sqlWhere());
-			// whereSql.append(tableName).append(".");
 		}
 		whereSql.append(mapper.getDbFieldName());
 	}
@@ -910,8 +909,6 @@ public class SqlBuilder {
 				.getClass()));
 		QueryMapper queryMapper = buildQueryMapper(object.getClass(),
 				getTableMappedClass(object.getClass()));
-		// String tableName = ((TableMapperAnnotation) tableMapper
-		// .getTableMapperAnnotation()).tableName();
 		TableName tableName = new TableName(
 				((TableMapperAnnotation) tableMapper.getTableMapperAnnotation())
 						.tableName(), index.getAndIncrement());

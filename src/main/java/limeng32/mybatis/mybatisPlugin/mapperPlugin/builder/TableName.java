@@ -7,24 +7,17 @@ public class TableName {
 		this.index = index;
 	}
 
-//	public TableName(String tableName) {
-//		this.tableName = tableName;
-//	}
-
 	private String tableName;
 
 	private int index = 0;
 
-	public String sqlSelect() {
-		return tableName + " as " + tableName + "_" + index + " ";
+	public StringBuffer sqlSelect() {
+		return new StringBuffer(tableName).append(" as ").append(tableName)
+				.append("_").append(index);
 	}
 
-	public String sqlWhere() {
-		return tableName + "_" + index + ".";
+	public StringBuffer sqlWhere() {
+		return new StringBuffer(tableName).append("_").append(index)
+				.append(".");
 	}
-
-	public int getIndex() {
-		return index;
-	}
-
 }
