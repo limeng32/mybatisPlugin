@@ -483,6 +483,18 @@ public class SqlBuilder {
 		whereSql.append("} and ");
 	}
 
+	private static void dealConditionNullOrNot(Object value,
+			StringBuffer whereSql, Mapperable mapper, TableName tableName,
+			String fieldNamePrefix) {
+		Boolean isNull = (Boolean) value;
+		handleWhereSql(whereSql, mapper, tableName, fieldNamePrefix);
+		whereSql.append(" is");
+		if (!isNull) {
+			whereSql.append(" not");
+		}
+		whereSql.append(" null").append(" and ");
+	}
+
 	private static void handleWhereSql(StringBuffer whereSql,
 			Mapperable mapper, TableName tableName, String fieldNamePrefix) {
 		if (tableName != null) {
@@ -1023,6 +1035,10 @@ public class SqlBuilder {
 				dealConditionInOrNot(value, whereSql, conditionMapper,
 						ConditionType.NotIn, tableName, temp);
 				break;
+			case NullOrNot:
+				dealConditionNullOrNot(value, whereSql, conditionMapper,
+						tableName, temp);
+				break;
 			default:
 				break;
 			}
@@ -1145,6 +1161,10 @@ public class SqlBuilder {
 			case NotIn:
 				dealConditionInOrNot(value, whereSql, conditionMapper,
 						ConditionType.NotIn, tableName, temp);
+				break;
+			case NullOrNot:
+				dealConditionNullOrNot(value, whereSql, conditionMapper,
+						tableName, temp);
 				break;
 			default:
 				break;

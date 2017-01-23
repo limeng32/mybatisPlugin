@@ -86,6 +86,12 @@ public class Account_Condition extends Account_ implements Conditionable {
 	@ConditionMapperAnnotation(dbFieldName = field_opLock, conditionType = ConditionType.NotIn)
 	private Collection<Integer> opLockNotIn;
 
+	@ConditionMapperAnnotation(dbFieldName = field_email, conditionType = ConditionType.NullOrNot)
+	private Boolean emailIsNull;
+
+	@ConditionMapperAnnotation(dbFieldName = "role_ID", conditionType = ConditionType.NullOrNot)
+	private Boolean roleIsNull;
+
 	@Override
 	public Limitable getLimiter() {
 		return limiter;
@@ -176,5 +182,21 @@ public class Account_Condition extends Account_ implements Conditionable {
 
 	public void setOpLockNotIn(Collection<Integer> opLockNotIn) {
 		this.opLockNotIn = opLockNotIn;
+	}
+
+	public Boolean getEmailIsNull() {
+		return emailIsNull;
+	}
+
+	public void setEmailIsNull(Boolean emailIsNull) {
+		this.emailIsNull = emailIsNull;
+	}
+
+	public Boolean getRoleIsNull() {
+		return roleIsNull;
+	}
+
+	public void setRoleIsNull(Boolean roleIsNull) {
+		this.roleIsNull = roleIsNull;
 	}
 }

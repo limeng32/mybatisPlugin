@@ -44,5 +44,9 @@ public enum ConditionType {
 	/**
 	 * 不属于 ， 完成
 	 */
-	NotIn
+	NotIn,
+	/**
+	 * 为null或不为null，完成
+	 */
+	NullOrNot
 }
