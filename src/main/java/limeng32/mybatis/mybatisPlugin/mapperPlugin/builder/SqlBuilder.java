@@ -200,7 +200,10 @@ public class SqlBuilder {
 													.dbAssociationUniqueKey());
 									conditionMapper.setForeignKey(true);
 								}
-								if (conditionMapper.isForeignKey()) {
+								if (conditionMapper.isForeignKey()
+										&& (!ConditionType.NullOrNot
+												.equals(conditionMapper
+														.getConditionType()))) {
 									if (!tableMapperCache.containsKey(pojoField
 											.getType())) {
 										buildTableMapper(pojoField.getType());
