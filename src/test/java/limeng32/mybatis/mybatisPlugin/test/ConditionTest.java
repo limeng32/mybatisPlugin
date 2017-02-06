@@ -9,7 +9,11 @@ import limeng32.mybatis.mybatisPlugin.AccountService;
 import limeng32.mybatis.mybatisPlugin.Account_;
 import limeng32.mybatis.mybatisPlugin.LoginLogService;
 import limeng32.mybatis.mybatisPlugin.LoginLog_;
+import limeng32.mybatis.mybatisPlugin.cachePlugin.Conditionable.Sequence;
+import limeng32.mybatis.mybatisPlugin.cachePlugin.Order;
+import limeng32.mybatis.mybatisPlugin.cachePlugin.SortParam;
 import limeng32.mybatis.mybatisPlugin.condition.Account_Condition;
+import limeng32.mybatis.mybatisPlugin.condition.Role_Condition;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.Assert;
@@ -28,6 +32,8 @@ import com.github.springtestdbunit.annotation.DatabaseOperation;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.DatabaseTearDown;
 import com.github.springtestdbunit.annotation.DbUnitConfiguration;
+import com.github.springtestdbunit.annotation.ExpectedDatabase;
+import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 import com.github.springtestdbunit.dataset.FlatXmlDataSetLoader;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -213,5 +219,26 @@ public class ConditionTest {
 		lc.setAccount(ac3);
 		Collection<LoginLog_> c3 = loginLogService.selectAll(lc);
 		Assert.assertEquals(1, c3.size());
+	}
+
+	/** 测试多重外键情况下sorter是否能正确发挥作用 */
+	@Test
+	@IfProfileValue(name = "VOLATILE", value = "true")
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "/limeng32/mybatis/mybatisPlugin/test/conditionTest/testSorterWithMultiAssociation.xml")
+	@ExpectedDatabase(assertionMode = DatabaseAssertionMode.NON_STRICT, value = "/limeng32/mybatis/mybatisPlugin/test/conditionTest/testSorterWithMultiAssociation.result.xml")
+	@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/conditionTest/testSorterWithMultiAssociation.xml")
+	public void testSorterWithMultiAssociation() {
+		Role_Condition rc1 = new Role_Condition();
+		rc1.setName("role1");
+		Role_Condition rc2 = new Role_Condition();
+		rc2.setName("role2");
+		Account_Condition ac = new Account_Condition();
+		ac.setRole(rc1);
+		ac.setRoleDeputy(rc2);
+		ac.setSorter(new SortParam(new Order("name", Sequence.asc)));
+		Collection<Account_> accountC = accountService.selectAll(ac);
+		Account_[] accounts = accountC.toArray(new Account_[accountC.size()]);
+		Assert.assertEquals(3, accounts.length);
+		Assert.assertEquals("bob", accounts[0].getName());
 	}
 }
