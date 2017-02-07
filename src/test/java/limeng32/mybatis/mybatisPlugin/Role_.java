@@ -24,11 +24,6 @@ public class Role_ extends PojoSupport<Role_> implements Serializable {
 	private java.util.Collection<Account_> accountDeputy;
 
 	@Override
-	public boolean equalsExactly(Object arg0) {
-		return false;
-	}
-
-	@Override
 	public Integer getId() {
 		return id;
 	}

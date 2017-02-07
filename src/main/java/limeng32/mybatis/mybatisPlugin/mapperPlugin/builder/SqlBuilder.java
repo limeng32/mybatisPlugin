@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import limeng32.mybatis.mybatisPlugin.cachePlugin.Conditionable;
 import limeng32.mybatis.mybatisPlugin.mapperPlugin.annotation.ConditionMapper;
 import limeng32.mybatis.mybatisPlugin.mapperPlugin.annotation.ConditionMapperAnnotation;
 import limeng32.mybatis.mybatisPlugin.mapperPlugin.annotation.ConditionType;
@@ -838,6 +839,42 @@ public class SqlBuilder {
 					whereSql.lastIndexOf("and") + 3);
 		}
 		return selectSql.append(fromSql).append(whereSql).toString();
+	}
+
+	/**
+	 * 由传入的对象生成query sql语句
+	 * 
+	 * @param clazz
+	 * @return sql
+	 * @throws Exception
+	 */
+	public static String buildSelectOneSql(Object object) throws Exception {
+		if (null == object) {
+			throw new RuntimeException(
+					"Sorry,I refuse to build sql for a null object!");
+		}
+		if (object instanceof Conditionable) {
+			((Conditionable) object).setLimiter(null);
+		}
+		StringBuffer selectSql = new StringBuffer("select ");
+		StringBuffer fromSql = new StringBuffer(" from ");
+		StringBuffer whereSql = new StringBuffer(" where ");
+		AtomicInteger ai = new AtomicInteger(0);
+		dealMapperAnnotationIterationForSelectAll(object, selectSql, fromSql,
+				whereSql, null, null, null, ai);
+
+		if (selectSql.indexOf(",") > -1) {
+			selectSql.delete(selectSql.lastIndexOf(","),
+					selectSql.lastIndexOf(",") + 1);
+		}
+		if (" where ".equals(whereSql.toString())) {
+			whereSql = new StringBuffer();
+		} else if (whereSql.indexOf("and") > -1) {
+			whereSql.delete(whereSql.lastIndexOf("and"),
+					whereSql.lastIndexOf("and") + 3);
+		}
+		return selectSql.append(fromSql).append(whereSql).append(" limit 1")
+				.toString();
 	}
 
 	/**

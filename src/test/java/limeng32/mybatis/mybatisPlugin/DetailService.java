@@ -16,8 +16,13 @@ public class DetailService extends ServiceSupport<Detail_> implements
 	private DetailMapper mapper;
 
 	@Override
-	public Detail_ select(int id) {
+	public Detail_ select(Object id) {
 		return supportSelect(mapper, id);
+	}
+
+	@Override
+	public Detail_ selectOne(Detail_ t) {
+		return supportSelectOne(mapper, t);
 	}
 
 	@Override
@@ -38,16 +43,6 @@ public class DetailService extends ServiceSupport<Detail_> implements
 	@Override
 	public int updatePersistent(Detail_ t) {
 		return supportUpdatePersistent(mapper, t);
-	}
-
-	@Override
-	public void retrieve(Detail_ t) {
-		supportRetrieve(mapper, t);
-	}
-
-	@Override
-	public void retrieveOnlyNull(Detail_ t) {
-		supportRetrieveOnlyNull(mapper, t);
 	}
 
 	@Override

@@ -18,8 +18,13 @@ public class RoleService extends ServiceSupport<Role_> implements RoleMapper {
 	private AccountService accountService;
 
 	@Override
-	public Role_ select(int id) {
+	public Role_ select(Object id) {
 		return supportSelect(mapper, id);
+	}
+	
+	@Override
+	public Role_ selectOne(Role_ t) {
+		return supportSelectOne(mapper, t);
 	}
 
 	@Override
@@ -40,16 +45,6 @@ public class RoleService extends ServiceSupport<Role_> implements RoleMapper {
 	@Override
 	public int updatePersistent(Role_ t) {
 		return supportUpdatePersistent(mapper, t);
-	}
-
-	@Override
-	public void retrieve(Role_ t) {
-		supportRetrieve(mapper, t);
-	}
-
-	@Override
-	public void retrieveOnlyNull(Role_ t) {
-		supportRetrieveOnlyNull(mapper, t);
 	}
 
 	@Override

@@ -19,8 +19,13 @@ public class AccountService extends ServiceSupport<Account_> implements
 	private LoginLogService loginLogService;
 
 	@Override
-	public Account_ select(int id) {
+	public Account_ select(Object id) {
 		return supportSelect(mapper, id);
+	}
+
+	@Override
+	public Account_ selectOne(Account_ t) {
+		return supportSelectOne(mapper, t);
 	}
 
 	@Override
@@ -44,16 +49,6 @@ public class AccountService extends ServiceSupport<Account_> implements
 	}
 
 	@Override
-	public void retrieve(Account_ t) {
-		supportRetrieve(mapper, t);
-	}
-
-	@Override
-	public void retrieveOnlyNull(Account_ t) {
-		supportRetrieveOnlyNull(mapper, t);
-	}
-
-	@Override
 	public int delete(Account_ t) {
 		return supportDelete(mapper, t);
 	}
@@ -68,4 +63,5 @@ public class AccountService extends ServiceSupport<Account_> implements
 		loginLog.setAccount(account);
 		account.setLoginLog(loginLogService.selectAll(loginLog));
 	}
+
 }

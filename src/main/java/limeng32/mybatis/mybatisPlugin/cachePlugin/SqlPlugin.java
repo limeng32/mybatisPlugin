@@ -163,10 +163,19 @@ public class SqlPlugin implements Interceptor {
 	private String generatePageSql(String sql, Conditionable condition) {
 		if (condition != null && (dialect != null || !dialect.equals(""))) {
 			StringBuffer pageSql = new StringBuffer();
-			if ("mysql".equals(dialect)) {
-				pageSql.append(sql);
-				if (condition.getSorter() != null) {
-					pageSql.append(condition.getSorter().toSql());
+			switch (dialect) {
+			case "mysql":
+				if (condition.getSorter() == null) {
+					pageSql.append(sql);
+				} else {
+					if (sql.endsWith(" limit 1")) {
+						pageSql.append(sql.substring(0, sql.length() - 8));
+						pageSql.append(condition.getSorter().toSql());
+						pageSql.append(" limit 1");
+					} else {
+						pageSql.append(sql);
+						pageSql.append(condition.getSorter().toSql());
+					}
 				}
 				if (condition.getLimiter() != null) {
 					pageSql.append(" limit "

@@ -13,11 +13,15 @@ public interface AccountMapper extends MapperFace<Account_> {
 
 	@Override
 	@CacheAnnotation(MappedClass = { Role_.class }, role = CacheRoleType.Observer)
-	public Account_ select(int id);
+	public Account_ select(Object id);
 
 	@Override
 	@CacheAnnotation(MappedClass = { Role_.class }, role = CacheRoleType.Observer)
 	public Collection<Account_> selectAll(Account_ t);
+
+	@Override
+	@CacheAnnotation(MappedClass = { Role_.class }, role = CacheRoleType.Observer)
+	public Account_ selectOne(Account_ t);
 
 	@Override
 	public void insert(Account_ t);
@@ -29,12 +33,6 @@ public interface AccountMapper extends MapperFace<Account_> {
 	@Override
 	@CacheAnnotation(MappedClass = { Account_.class }, role = CacheRoleType.Trigger)
 	public int updatePersistent(Account_ t);
-
-	@Override
-	public void retrieve(Account_ t);
-
-	@Override
-	public void retrieveOnlyNull(Account_ t);
 
 	@Override
 	@CacheAnnotation(MappedClass = { Account_.class }, role = CacheRoleType.Trigger)

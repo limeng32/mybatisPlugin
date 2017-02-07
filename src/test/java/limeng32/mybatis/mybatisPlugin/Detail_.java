@@ -56,9 +56,4 @@ public class Detail_ extends PojoSupport<Detail_> implements Serializable {
 		}
 	}
 
-	@Override
-	public boolean equalsExactly(Object obj) {
-		return false;
-	}
-
 }

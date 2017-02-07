@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.util.List;
 import java.util.Properties;
 
+import limeng32.mybatis.mybatisPlugin.cachePlugin.Conditionable;
+import limeng32.mybatis.mybatisPlugin.cachePlugin.PageParam;
 import limeng32.mybatis.mybatisPlugin.mapperPlugin.builder.SqlBuilder;
 
 import org.apache.ibatis.builder.SqlSourceBuilder;
@@ -88,6 +90,9 @@ public class AutoMapperInterceptor implements Interceptor {
 				break;
 			case "selectAll":
 				newSql = SqlBuilder.buildSelectAllSql(parameterObject);
+				break;
+			case "selectOne":
+				newSql = SqlBuilder.buildSelectOneSql(parameterObject);
 				break;
 			case "update":
 				newSql = SqlBuilder.buildUpdateSql(parameterObject);

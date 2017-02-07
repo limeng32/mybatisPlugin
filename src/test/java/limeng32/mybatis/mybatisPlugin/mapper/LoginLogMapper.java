@@ -13,11 +13,15 @@ public interface LoginLogMapper extends MapperFace<LoginLog_> {
 
 	@Override
 	@CacheAnnotation(MappedClass = { Account_.class }, role = CacheRoleType.Observer)
-	public LoginLog_ select(int id);
+	public LoginLog_ select(Object id);
 
 	@Override
 	@CacheAnnotation(MappedClass = { Account_.class }, role = CacheRoleType.Observer)
 	public Collection<LoginLog_> selectAll(LoginLog_ t);
+
+	@Override
+	@CacheAnnotation(MappedClass = { Account_.class }, role = CacheRoleType.Observer)
+	public LoginLog_ selectOne(LoginLog_ t);
 
 	@Override
 	public void insert(LoginLog_ t);
@@ -29,12 +33,6 @@ public interface LoginLogMapper extends MapperFace<LoginLog_> {
 	@Override
 	@CacheAnnotation(MappedClass = { LoginLog_.class }, role = CacheRoleType.Trigger)
 	public int updatePersistent(LoginLog_ t);
-
-	@Override
-	public void retrieve(LoginLog_ t);
-
-	@Override
-	public void retrieveOnlyNull(LoginLog_ t);
 
 	@Override
 	@CacheAnnotation(MappedClass = { LoginLog_.class }, role = CacheRoleType.Trigger)

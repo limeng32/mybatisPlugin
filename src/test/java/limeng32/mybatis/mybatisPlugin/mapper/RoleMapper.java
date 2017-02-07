@@ -12,11 +12,15 @@ public interface RoleMapper extends MapperFace<Role_> {
 
 	@Override
 	@CacheAnnotation(MappedClass = {}, role = CacheRoleType.Observer)
-	public Role_ select(int id);
+	public Role_ select(Object id);
 
 	@Override
 	@CacheAnnotation(MappedClass = {}, role = CacheRoleType.Observer)
 	public Collection<Role_> selectAll(Role_ t);
+	
+	@Override
+	@CacheAnnotation(MappedClass = {}, role = CacheRoleType.Observer)
+	public Role_ selectOne(Role_ t);
 
 	@Override
 	public void insert(Role_ t);
@@ -28,12 +32,6 @@ public interface RoleMapper extends MapperFace<Role_> {
 	@Override
 	@CacheAnnotation(MappedClass = { Role_.class }, role = CacheRoleType.Trigger)
 	public int updatePersistent(Role_ t);
-
-	@Override
-	public void retrieve(Role_ t);
-
-	@Override
-	public void retrieveOnlyNull(Role_ t);
 
 	@Override
 	@CacheAnnotation(MappedClass = { Role_.class }, role = CacheRoleType.Trigger)

@@ -12,11 +12,15 @@ public interface DetailMapper extends MapperFace<Detail_> {
 
 	@Override
 	@CacheAnnotation(MappedClass = { LoginLog_.class }, role = CacheRoleType.Observer)
-	public Detail_ select(int id);
+	public Detail_ select(Object id);
 
 	@Override
 	@CacheAnnotation(MappedClass = { LoginLog_.class }, role = CacheRoleType.Observer)
 	public Collection<Detail_> selectAll(Detail_ t);
+
+	@Override
+	@CacheAnnotation(MappedClass = { LoginLog_.class }, role = CacheRoleType.Observer)
+	public Detail_ selectOne(Detail_ t);
 
 	@Override
 	public void insert(Detail_ t);
@@ -28,12 +32,6 @@ public interface DetailMapper extends MapperFace<Detail_> {
 	@Override
 	@CacheAnnotation(MappedClass = { Detail_.class }, role = CacheRoleType.Trigger)
 	public int updatePersistent(Detail_ t);
-
-	@Override
-	public void retrieve(Detail_ t);
-
-	@Override
-	public void retrieveOnlyNull(Detail_ t);
 
 	@Override
 	@CacheAnnotation(MappedClass = { Detail_.class }, role = CacheRoleType.Trigger)

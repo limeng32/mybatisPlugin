@@ -19,8 +19,13 @@ public class LoginLogService extends ServiceSupport<LoginLog_> implements
 	private DetailService detailService;
 
 	@Override
-	public LoginLog_ select(int id) {
+	public LoginLog_ select(Object id) {
 		return supportSelect(mapper, id);
+	}
+
+	@Override
+	public LoginLog_ selectOne(LoginLog_ t) {
+		return supportSelectOne(mapper, t);
 	}
 
 	@Override
@@ -41,16 +46,6 @@ public class LoginLogService extends ServiceSupport<LoginLog_> implements
 	@Override
 	public int updatePersistent(LoginLog_ t) {
 		return supportUpdatePersistent(mapper, t);
-	}
-
-	@Override
-	public void retrieve(LoginLog_ t) {
-		supportRetrieve(mapper, t);
-	}
-
-	@Override
-	public void retrieveOnlyNull(LoginLog_ t) {
-		supportRetrieveOnlyNull(mapper, t);
 	}
 
 	@Override
