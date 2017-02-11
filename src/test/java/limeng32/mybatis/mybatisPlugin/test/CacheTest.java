@@ -50,7 +50,7 @@ public class CacheTest {
 	private RoleService roleService;
 
 	@Test
-	@IfProfileValue(name = "VOLATILE", value = "true")
+	@IfProfileValue(name = "CACHE", value = "true")
 	@DatabaseSetup(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/CacheTest.test.xml")
 	@ExpectedDatabase(assertionMode = DatabaseAssertionMode.NON_STRICT, value = "/limeng32/mybatis/mybatisPlugin/test/CacheTest.test.result.xml")
 	@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/CacheTest.test.result.xml")
@@ -79,7 +79,7 @@ public class CacheTest {
 	}
 
 	@Test
-	@IfProfileValue(name = "VOLATILE", value = "true")
+	@IfProfileValue(name = "CACHE", value = "true")
 	@DatabaseSetup(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/CacheTest/test2.xml")
 	@ExpectedDatabase(assertionMode = DatabaseAssertionMode.NON_STRICT, value = "/limeng32/mybatis/mybatisPlugin/test/CacheTest/test2.result.xml")
 	@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/CacheTest/test2.result.xml")
@@ -117,7 +117,7 @@ public class CacheTest {
 	}
 
 	@Test
-	@IfProfileValue(name = "VOLATILE", value = "true")
+	@IfProfileValue(name = "CACHE", value = "true")
 	@DatabaseSetup(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/CacheTest/test3.xml")
 	@ExpectedDatabase(assertionMode = DatabaseAssertionMode.NON_STRICT, value = "/limeng32/mybatis/mybatisPlugin/test/CacheTest/test3.result.xml")
 	@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL, value = "/limeng32/mybatis/mybatisPlugin/test/CacheTest/test3.result.xml")

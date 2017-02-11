@@ -3,7 +3,7 @@
 <configuration>
 	<settings>
 		<setting name="logImpl" value="LOG4J" />
-		<setting name="cacheEnabled" value="false" />
+		<setting name="cacheEnabled" value="${mybatis.cacheEnabled}" />
 		<setting name="lazyLoadingEnabled" value="false" />
 		<setting name="aggressiveLazyLoading" value="false" />
 		<setting name="localCacheScope" value="SESSION" />
@@ -31,10 +31,12 @@
 			<property name="dialect" value="mysql" />
 		</plugin>
 
-		<plugin interceptor="limeng32.mybatis.mybatisPlugin.mapperPlugin.AutoMapperInterceptor">
+		<plugin
+			interceptor="limeng32.mybatis.mybatisPlugin.mapperPlugin.AutoMapperInterceptor">
 		</plugin>
 
-		<plugin interceptor="limeng32.mybatis.mybatisPlugin.cachePlugin.EnhancedCachingExecutor">
+		<plugin
+			interceptor="limeng32.mybatis.mybatisPlugin.cachePlugin.EnhancedCachingExecutor">
 			<property name="cacheEnabled" value="true" />
 			<property name="annotationPackage" value="limeng32.mybatis.mybatisPlugin" />
 		</plugin>
