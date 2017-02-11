@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 用于描述mapper方法之间的对应关系的注解
+ * 用于描述mapper中的方法是用于触发还是用于观察
  * 
  * @author limeng32
  * 
@@ -18,14 +18,7 @@ import java.lang.annotation.Target;
 public @interface CacheAnnotation {
 	/**
 	 * 
-	 * 目标方法在缓存中对应的角色，分为trigger和observer。
+	 * 目标方法是用于触发还是用于观察，前者为trigger，后者为observer。
 	 */
 	CacheRoleType role();
-
-	/**
-	 * 
-	 * 目标方法对应的pojo类的数组，如果是trigger取第一个类，如果是observer取所有类。
-	 */
-	Class<?>[] MappedClass();
-
 }

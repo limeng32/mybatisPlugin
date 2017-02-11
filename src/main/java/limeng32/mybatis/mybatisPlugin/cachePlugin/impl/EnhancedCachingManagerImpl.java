@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import limeng32.mybatis.mybatisPlugin.cachePlugin.CacheKeysPool;
 import limeng32.mybatis.mybatisPlugin.cachePlugin.EnhancedCachingManager;
-import limeng32.mybatis.mybatisPlugin.cachePlugin.annotation.CacheAnnotationNew;
+import limeng32.mybatis.mybatisPlugin.cachePlugin.annotation.CacheAnnotation;
 import limeng32.mybatis.mybatisPlugin.cachePlugin.annotation.CacheRoleAnnotation;
 import limeng32.mybatis.mybatisPlugin.util.ReflectHelper;
 
@@ -125,10 +125,10 @@ public class EnhancedCachingManagerImpl implements EnhancedCachingManager {
 					.getClasses(annotationPackageName);
 			for (Class<?> clazz : classes) {
 				for (Method method : clazz.getDeclaredMethods()) {
-					CacheAnnotationNew cacheAnnotationNew = method
-							.getAnnotation(CacheAnnotationNew.class);
-					if (cacheAnnotationNew != null) {
-						dealPackageInit22(clazz, method, cacheAnnotationNew);
+					CacheAnnotation cacheAnnotation = method
+							.getAnnotation(CacheAnnotation.class);
+					if (cacheAnnotation != null) {
+						dealPackageInit21(clazz, method, cacheAnnotation);
 					}
 				}
 			}
@@ -137,9 +137,9 @@ public class EnhancedCachingManagerImpl implements EnhancedCachingManager {
 		}
 	}
 
-	private void dealPackageInit22(Class<?> clazz, Method method,
-			CacheAnnotationNew cacheAnnotationNew) {
-		switch (cacheAnnotationNew.role()) {
+	private void dealPackageInit21(Class<?> clazz, Method method,
+			CacheAnnotation cacheAnnotation) {
+		switch (cacheAnnotation.role()) {
 		case Observer:
 			for (Class<?> clazz1 : observerClasses.get(clazz)) {
 				if (!observerMethods.containsKey(clazz1)) {

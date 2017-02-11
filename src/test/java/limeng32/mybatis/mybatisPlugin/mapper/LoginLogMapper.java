@@ -6,7 +6,7 @@ import limeng32.mirage.util.mapper.MapperFace;
 import limeng32.mybatis.mybatisPlugin.Account_;
 import limeng32.mybatis.mybatisPlugin.Detail_;
 import limeng32.mybatis.mybatisPlugin.LoginLog_;
-import limeng32.mybatis.mybatisPlugin.cachePlugin.annotation.CacheAnnotationNew;
+import limeng32.mybatis.mybatisPlugin.cachePlugin.annotation.CacheAnnotation;
 import limeng32.mybatis.mybatisPlugin.cachePlugin.annotation.CacheRoleAnnotation;
 import limeng32.mybatis.mybatisPlugin.cachePlugin.annotation.CacheRoleType;
 
@@ -14,34 +14,34 @@ import limeng32.mybatis.mybatisPlugin.cachePlugin.annotation.CacheRoleType;
 public interface LoginLogMapper extends MapperFace<LoginLog_> {
 
 	@Override
-	@CacheAnnotationNew(role = CacheRoleType.Observer)
+	@CacheAnnotation(role = CacheRoleType.Observer)
 	public LoginLog_ select(Object id);
 
 	@Override
-	@CacheAnnotationNew(role = CacheRoleType.Observer)
+	@CacheAnnotation(role = CacheRoleType.Observer)
 	public Collection<LoginLog_> selectAll(LoginLog_ t);
 
 	@Override
-	@CacheAnnotationNew(role = CacheRoleType.Observer)
+	@CacheAnnotation(role = CacheRoleType.Observer)
 	public LoginLog_ selectOne(LoginLog_ t);
 
 	@Override
 	public void insert(LoginLog_ t);
 
 	@Override
-	@CacheAnnotationNew(role = CacheRoleType.Trigger)
+	@CacheAnnotation(role = CacheRoleType.Trigger)
 	public int update(LoginLog_ t);
 
 	@Override
-	@CacheAnnotationNew(role = CacheRoleType.Trigger)
+	@CacheAnnotation(role = CacheRoleType.Trigger)
 	public int updatePersistent(LoginLog_ t);
 
 	@Override
-	@CacheAnnotationNew(role = CacheRoleType.Trigger)
+	@CacheAnnotation(role = CacheRoleType.Trigger)
 	public int delete(LoginLog_ t);
 
 	@Override
-	@CacheAnnotationNew(role = CacheRoleType.Observer)
+	@CacheAnnotation(role = CacheRoleType.Observer)
 	public int count(LoginLog_ t);
 
 	public void loadDetail(LoginLog_ loginLog, Detail_ detail);
