@@ -15,17 +15,14 @@ import limeng32.mybatis.mybatisPlugin.cachePlugin.annotation.CacheRoleType;
 public interface AccountMapper extends MapperFace<Account_> {
 
 	@Override
-	@CacheAnnotation(MappedClass = { Role_.class }, role = CacheRoleType.Observer)
 	@CacheAnnotationNew(role = CacheRoleType.Observer)
 	public Account_ select(Object id);
 
 	@Override
-	@CacheAnnotation(MappedClass = { Role_.class }, role = CacheRoleType.Observer)
 	@CacheAnnotationNew(role = CacheRoleType.Observer)
 	public Collection<Account_> selectAll(Account_ t);
 
 	@Override
-	@CacheAnnotation(MappedClass = { Role_.class }, role = CacheRoleType.Observer)
 	@CacheAnnotationNew(role = CacheRoleType.Observer)
 	public Account_ selectOne(Account_ t);
 
@@ -33,22 +30,18 @@ public interface AccountMapper extends MapperFace<Account_> {
 	public void insert(Account_ t);
 
 	@Override
-	@CacheAnnotation(MappedClass = { Account_.class }, role = CacheRoleType.Trigger)
 	@CacheAnnotationNew(role = CacheRoleType.Trigger)
 	public int update(Account_ t);
 
 	@Override
-	@CacheAnnotation(MappedClass = { Account_.class }, role = CacheRoleType.Trigger)
 	@CacheAnnotationNew(role = CacheRoleType.Trigger)
 	public int updatePersistent(Account_ t);
 
 	@Override
-	@CacheAnnotation(MappedClass = { Account_.class }, role = CacheRoleType.Trigger)
 	@CacheAnnotationNew(role = CacheRoleType.Trigger)
 	public int delete(Account_ t);
 
 	@Override
-	@CacheAnnotation(MappedClass = { Role_.class }, role = CacheRoleType.Observer)
 	@CacheAnnotationNew(role = CacheRoleType.Observer)
 	public int count(Account_ t);
 

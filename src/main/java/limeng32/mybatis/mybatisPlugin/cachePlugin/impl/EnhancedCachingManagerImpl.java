@@ -1,5 +1,6 @@
 package limeng32.mybatis.mybatisPlugin.cachePlugin.impl;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Map;
@@ -9,7 +10,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import limeng32.mybatis.mybatisPlugin.cachePlugin.CacheKeysPool;
 import limeng32.mybatis.mybatisPlugin.cachePlugin.EnhancedCachingManager;
-import limeng32.mybatis.mybatisPlugin.cachePlugin.annotation.CacheAnnotation;
+import limeng32.mybatis.mybatisPlugin.cachePlugin.annotation.CacheAnnotationNew;
+import limeng32.mybatis.mybatisPlugin.cachePlugin.annotation.CacheRoleAnnotation;
 import limeng32.mybatis.mybatisPlugin.util.ReflectHelper;
 
 import org.apache.ibatis.cache.Cache;
@@ -22,6 +24,8 @@ public class EnhancedCachingManagerImpl implements EnhancedCachingManager {
 	private Map<String, Set<String>> observers = new ConcurrentHashMap<>();
 	private Map<Class<?>, Set<Method>> triggerMethods = new ConcurrentHashMap<>();
 	private Map<Class<?>, Set<Method>> observerMethods = new ConcurrentHashMap<>();
+	private Map<Class<?>, Set<Class<?>>> observerClasses = new ConcurrentHashMap<>();
+	private Map<Class<?>, Set<Class<?>>> triggerClasses = new ConcurrentHashMap<>();
 
 	// 全局性的 statemntId与CacheKey集合
 	private CacheKeysPool sharedCacheKeysPool = new CacheKeysPool();
@@ -77,47 +81,81 @@ public class EnhancedCachingManagerImpl implements EnhancedCachingManager {
 		if ("true".equals(cacheEnabled)) {
 			this.cacheEnabled = true;
 		}
-
 		String annotationPackageName = properties
 				.getProperty("annotationPackage");
+		dealPackageInit(annotationPackageName);
+		dealPackageInit2(annotationPackageName);
+	}
+
+	private void dealPackageInit(String annotationPackageName) {
+		Package annotationPackage = Package.getPackage(annotationPackageName);
+		if (annotationPackage != null) {
+			Set<Class<?>> classes = ReflectHelper
+					.getClasses(annotationPackageName);
+			for (Class<?> clazz : classes) {
+				// 将每个class中的cacheRole取出，放入一个集合
+				Annotation[] classAnnotations = clazz.getDeclaredAnnotations();
+				for (Annotation an : classAnnotations) {
+					if (an instanceof CacheRoleAnnotation) {
+						if (!observerClasses.containsKey(clazz)) {
+							observerClasses.put(clazz, new HashSet<Class<?>>());
+						}
+						if (!triggerClasses.containsKey(clazz)) {
+							triggerClasses.put(clazz, new HashSet<Class<?>>());
+						}
+						CacheRoleAnnotation cacheRoleAnnotation = (CacheRoleAnnotation) an;
+						for (Class<?> clazz1 : cacheRoleAnnotation
+								.ObserverClass()) {
+							observerClasses.get(clazz).add(clazz1);
+						}
+						for (Class<?> clazz1 : cacheRoleAnnotation
+								.TriggerClass()) {
+							triggerClasses.get(clazz).add(clazz1);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private void dealPackageInit2(String annotationPackageName) {
 		Package annotationPackage = Package.getPackage(annotationPackageName);
 		if (annotationPackage != null) {
 			Set<Class<?>> classes = ReflectHelper
 					.getClasses(annotationPackageName);
 			for (Class<?> clazz : classes) {
 				for (Method method : clazz.getDeclaredMethods()) {
-					CacheAnnotation cacheAnnotation = method
-							.getAnnotation(CacheAnnotation.class);
-					if (cacheAnnotation != null) {
-						switch (cacheAnnotation.role()) {
-						case Observer:
-							for (Class<?> clazz1 : cacheAnnotation
-									.MappedClass()) {
-								if (!observerMethods.containsKey(clazz1)) {
-									observerMethods.put(clazz1,
-											new HashSet<Method>());
-								}
-								/* 这里采用迭代的方式实现追加观察者的观察者 */
-								observerMethods.get(clazz1).add(method);
-							}
-							break;
-
-						case Trigger:
-							for (Class<?> clazz1 : cacheAnnotation
-									.MappedClass()) {
-								if (!triggerMethods.containsKey(clazz1)) {
-									triggerMethods.put(clazz1,
-											new HashSet<Method>());
-								}
-								triggerMethods.get(clazz1).add(method);
-							}
-							break;
-						}
+					CacheAnnotationNew cacheAnnotationNew = method
+							.getAnnotation(CacheAnnotationNew.class);
+					if (cacheAnnotationNew != null) {
+						dealPackageInit22(clazz, method, cacheAnnotationNew);
 					}
 				}
 			}
 			observerMethodsFission(observerMethods);
 			buildObservers(triggerMethods, observerMethods);
+		}
+	}
+
+	private void dealPackageInit22(Class<?> clazz, Method method,
+			CacheAnnotationNew cacheAnnotationNew) {
+		switch (cacheAnnotationNew.role()) {
+		case Observer:
+			for (Class<?> clazz1 : observerClasses.get(clazz)) {
+				if (!observerMethods.containsKey(clazz1)) {
+					observerMethods.put(clazz1, new HashSet<Method>());
+				}
+				observerMethods.get(clazz1).add(method);
+			}
+			break;
+		case Trigger:
+			for (Class<?> clazz1 : triggerClasses.get(clazz)) {
+				if (!triggerMethods.containsKey(clazz1)) {
+					triggerMethods.put(clazz1, new HashSet<Method>());
+				}
+				triggerMethods.get(clazz1).add(method);
+			}
+			break;
 		}
 	}
 
