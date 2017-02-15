@@ -3,27 +3,32 @@ package limeng32.mybatis.mybatisPlugin.cachePlugin.impl;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
+
+import org.apache.ibatis.cache.Cache;
 
 import limeng32.mybatis.mybatisPlugin.cachePlugin.CacheKeysPool;
 import limeng32.mybatis.mybatisPlugin.cachePlugin.EnhancedCachingManager;
 import limeng32.mybatis.mybatisPlugin.cachePlugin.annotation.CacheAnnotation;
 import limeng32.mybatis.mybatisPlugin.cachePlugin.annotation.CacheRoleAnnotation;
+import limeng32.mybatis.mybatisPlugin.cachePlugin.comparator.ClassComparator;
 import limeng32.mybatis.mybatisPlugin.util.ReflectHelper;
-
-import org.apache.ibatis.cache.Cache;
-
-import com.alibaba.fastjson.JSON;
 
 public class EnhancedCachingManagerImpl implements EnhancedCachingManager {
 
 	// 每一个statementId 更新依赖的statementId集合
 	private Map<String, Set<String>> observers = new ConcurrentHashMap<>();
 	private Map<Class<?>, Set<Method>> triggerMethods = new ConcurrentHashMap<>();
-	private Map<Class<?>, Set<Method>> observerMethods = new ConcurrentHashMap<>();
+	private ConcurrentSkipListMap<Class<?>, Set<Method>> observerMethods = new ConcurrentSkipListMap<>(
+			new ClassComparator());
+	private ConcurrentSkipListMap<Class<?>, Set<Method>> observerMethodsNew = new ConcurrentSkipListMap<>(
+			new ClassComparator());
 	private Map<Class<?>, Set<Class<?>>> observerClasses = new ConcurrentHashMap<>();
 	private Map<Class<?>, Set<Class<?>>> triggerClasses = new ConcurrentHashMap<>();
 
@@ -56,8 +61,7 @@ public class EnhancedCachingManagerImpl implements EnhancedCachingManager {
 			if (relatedStatements != null) {
 				for (String statementId : relatedStatements) {
 					Cache cache = holds.get(statementId);
-					Set<Object> cacheKeys = sharedCacheKeysPool
-							.get(statementId);
+					Set<Object> cacheKeys = sharedCacheKeysPool.get(statementId);
 					for (Object cacheKey : cacheKeys) {
 						cache.removeObject(cacheKey);
 					}
@@ -81,8 +85,7 @@ public class EnhancedCachingManagerImpl implements EnhancedCachingManager {
 		if ("true".equals(cacheEnabled)) {
 			this.cacheEnabled = true;
 		}
-		String annotationPackageName = properties
-				.getProperty("annotationPackage");
+		String annotationPackageName = properties.getProperty("annotationPackage");
 		dealPackageInit(annotationPackageName);
 		dealPackageInit2(annotationPackageName);
 	}
@@ -90,8 +93,7 @@ public class EnhancedCachingManagerImpl implements EnhancedCachingManager {
 	private void dealPackageInit(String annotationPackageName) {
 		Package annotationPackage = Package.getPackage(annotationPackageName);
 		if (annotationPackage != null) {
-			Set<Class<?>> classes = ReflectHelper
-					.getClasses(annotationPackageName);
+			Set<Class<?>> classes = ReflectHelper.getClasses(annotationPackageName);
 			for (Class<?> clazz : classes) {
 				// 将每个class中的cacheRole取出，放入一个集合
 				Annotation[] classAnnotations = clazz.getDeclaredAnnotations();
@@ -104,12 +106,10 @@ public class EnhancedCachingManagerImpl implements EnhancedCachingManager {
 							triggerClasses.put(clazz, new HashSet<Class<?>>());
 						}
 						CacheRoleAnnotation cacheRoleAnnotation = (CacheRoleAnnotation) an;
-						for (Class<?> clazz1 : cacheRoleAnnotation
-								.ObserverClass()) {
+						for (Class<?> clazz1 : cacheRoleAnnotation.ObserverClass()) {
 							observerClasses.get(clazz).add(clazz1);
 						}
-						for (Class<?> clazz1 : cacheRoleAnnotation
-								.TriggerClass()) {
+						for (Class<?> clazz1 : cacheRoleAnnotation.TriggerClass()) {
 							triggerClasses.get(clazz).add(clazz1);
 						}
 					}
@@ -121,24 +121,21 @@ public class EnhancedCachingManagerImpl implements EnhancedCachingManager {
 	private void dealPackageInit2(String annotationPackageName) {
 		Package annotationPackage = Package.getPackage(annotationPackageName);
 		if (annotationPackage != null) {
-			Set<Class<?>> classes = ReflectHelper
-					.getClasses(annotationPackageName);
+			Set<Class<?>> classes = ReflectHelper.getClasses(annotationPackageName);
 			for (Class<?> clazz : classes) {
 				for (Method method : clazz.getDeclaredMethods()) {
-					CacheAnnotation cacheAnnotation = method
-							.getAnnotation(CacheAnnotation.class);
+					CacheAnnotation cacheAnnotation = method.getAnnotation(CacheAnnotation.class);
 					if (cacheAnnotation != null) {
 						dealPackageInit21(clazz, method, cacheAnnotation);
 					}
 				}
 			}
-			observerMethodsFission(observerMethods);
-			buildObservers(triggerMethods, observerMethods);
+			observerMethodsFission(observerMethods, null, observerMethodsNew);
+			buildObservers(triggerMethods, observerMethodsNew);
 		}
 	}
 
-	private void dealPackageInit21(Class<?> clazz, Method method,
-			CacheAnnotation cacheAnnotation) {
+	private void dealPackageInit21(Class<?> clazz, Method method, CacheAnnotation cacheAnnotation) {
 		switch (cacheAnnotation.role()) {
 		case Observer:
 			for (Class<?> clazz1 : observerClasses.get(clazz)) {
@@ -159,30 +156,38 @@ public class EnhancedCachingManagerImpl implements EnhancedCachingManager {
 		}
 	}
 
-	private void observerMethodsFission(
-			Map<Class<?>, Set<Method>> observerMethodMap) {
-		String key1 = JSON.toJSONString(observerMethodMap);
-		Map<Class<?>, Set<Method>> temp = new ConcurrentHashMap<>();
-		for (Class<?> clazz : observerMethodMap.keySet()) {
-			Set<Method> observerMethodSet = observerMethodMap.get(clazz);
-			for (Method method : observerMethodSet) {
-				if ("select".equals(method.getName())) {
-					Class<?> clazz1 = method.getReturnType();
-					if (observerMethodMap.containsKey(clazz1)) {
-						temp.put(clazz, observerMethodMap.get(clazz1));
-					}
+	private void observerMethodsFission(ConcurrentSkipListMap<Class<?>, Set<Method>> observerMethodMap,
+			Entry<Class<?>, Set<Method>> currentE, ConcurrentSkipListMap<Class<?>, Set<Method>> observerMethodMapNew) {
+		if (observerMethodMap.size() != 0) {
+			if (currentE == null) {
+				currentE = observerMethodMap.firstEntry();
+			}
+			observerMethodMapNew.put(currentE.getKey(), currentE.getValue());
+			observerMethodsFissionFission(observerMethodMap, observerMethodMapNew);
+			Entry<Class<?>, Set<Method>> nextE = observerMethodMap.higherEntry(currentE.getKey());
+			if (nextE != null) {
+				observerMethodsFission(observerMethodMap, nextE, observerMethodMapNew);
+			}
+		}
+	}
+
+	private void observerMethodsFissionFission(ConcurrentSkipListMap<Class<?>, Set<Method>> observerMethodMap,
+			ConcurrentSkipListMap<Class<?>, Set<Method>> observerMethodMapNew) {
+		Set<Method> tempSet = new LinkedHashSet<>();
+		Entry<Class<?>, Set<Method>> lastE = observerMethodMapNew.lastEntry();
+		int size1 = lastE.getValue().size();
+		for (Method methob : lastE.getValue()) {
+			if ("select".equals(methob.getName())) {
+				Class<?> clazz = methob.getReturnType();
+				if (observerMethodMap.containsKey(clazz)) {
+					tempSet.addAll(observerMethodMap.get(clazz));
 				}
 			}
 		}
-		for (Class<?> clazz : observerMethodMap.keySet()) {
-			if (temp.containsKey(clazz)) {
-				Set<Method> observerMethodSet = observerMethodMap.get(clazz);
-				observerMethodSet.addAll(temp.get(clazz));
-			}
-		}
-		String key2 = JSON.toJSONString(observerMethodMap);
-		if (!key1.equals(key2)) {
-			observerMethodsFission(observerMethodMap);
+		lastE.getValue().addAll(tempSet);
+		int size2 = lastE.getValue().size();
+		if (size1 != size2) {
+			observerMethodsFissionFission(observerMethodMap, observerMethodMapNew);
 		}
 	}
 
@@ -205,15 +210,13 @@ public class EnhancedCachingManagerImpl implements EnhancedCachingManager {
 			Set<Method> observerMethods = observerMethodMap.get(clazz);
 			if (observerMethods != null) {
 				for (Method triggerMethod : triggerMethodMap.get(clazz)) {
-					String triggerFullName = triggerMethod.getDeclaringClass()
-							.getName() + "." + triggerMethod.getName();
+					String triggerFullName = triggerMethod.getDeclaringClass().getName() + "."
+							+ triggerMethod.getName();
 					if (!observers.containsKey(triggerFullName)) {
 						observers.put(triggerFullName, new HashSet<String>());
 					}
 					for (Method observerMethod : observerMethods) {
-						String observerFullName = observerMethod
-								.getDeclaringClass().getName()
-								+ "."
+						String observerFullName = observerMethod.getDeclaringClass().getName() + "."
 								+ observerMethod.getName();
 						observers.get(triggerFullName).add(observerFullName);
 					}
